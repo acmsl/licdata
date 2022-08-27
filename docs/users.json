@@ -1,1 +1,5 @@
-ContentFile(path="docs/users.json")
+[
+  {
+    "userId": 1
+  }
+]
