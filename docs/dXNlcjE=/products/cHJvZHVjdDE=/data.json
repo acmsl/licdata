@@ -1,1 +1,1 @@
-{'id': 'product1', 'userId': 'user1'}
+{'id': 'product1', 'userId': 'user1', 'anotherKey': 'ak1'}
