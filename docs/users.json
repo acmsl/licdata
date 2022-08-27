@@ -1,5 +1,1 @@
-[
-  {
-    "id": "user1"
-  }
-]
+ContentFile(path="docs/users.json")
