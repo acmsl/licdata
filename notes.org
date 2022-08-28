@@ -42,7 +42,6 @@ str(event) ->
 }
 #+end_src
 
-github token: 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
 npx serverless
 npx serverless plugin install -n serverless-python-requirements
 npx serverless deploy
