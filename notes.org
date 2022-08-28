@@ -3,6 +3,41 @@
 #+begin_src python
 str(event) ->
 
-{'version': '2.0', 'routeKey': 'POST /', 'rawPath': '/', 'rawQueryString': '', 'headers': {'accept': '*/*', 'content-length': '72', 'content-type': 'application/json', 'host': '32mojwz4n2.execute-api.eu-west-1.amazonaws.com', 'user-agent': 'curl/7.79.1', 'x-amzn-trace-id': 'Root=1-630b306c-7809dd3c52ec7141206975ce', 'x-forwarded-for': '83.39.229.188', 'x-forwarded-port': '443', 'x-forwarded-proto': 'https'}, 'requestContext': {'accountId': '926099104464', 'apiId': '32mojwz4n2', 'domainName': '32mojwz4n2.execute-api.eu-west-1.amazonaws.com', 'domainPrefix': '32mojwz4n2', 'http': {'method': 'POST', 'path': '/', 'protocol': 'HTTP/1.1', 'sourceIp': '83.39.229.188', 'userAgent': 'curl/7.79.1'}, 'requestId': 'XkSBAiJBjoEEJTg=', 'routeKey': 'POST /', 'stage': '$default', 'time': '28/Aug/2022:09:07:56 +0000', 'timeEpoch': 1661677676604}, 'body': '{  "userId": "2",  "productId": "3",  "data": {    "extraArg": "abc"  }}', 'isBase64Encoded': False}
-
+{
+   "version":"2.0",
+   "routeKey":"POST /",
+   "rawPath":"/",
+   "rawQueryString":"",
+   "headers":{
+      "accept":"*/*",
+      "content-length":"72",
+      "content-type":"application/json",
+      "host":"32mojwz4n2.execute-api.eu-west-1.amazonaws.com",
+      "user-agent":"curl/7.79.1",
+      "x-amzn-trace-id":"Root=1-630b306c-7809dd3c52ec7141206975ce",
+      "x-forwarded-for":"83.39.229.188",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https"
+   },
+   "requestContext":{
+      "accountId":"926099104464",
+      "apiId":"32mojwz4n2",
+      "domainName":"32mojwz4n2.execute-api.eu-west-1.amazonaws.com",
+      "domainPrefix":"32mojwz4n2",
+      "http":{
+         "method":"POST",
+         "path":"/",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"83.39.229.188",
+         "userAgent":"curl/7.79.1"
+      },
+      "requestId":"XkSBAiJBjoEEJTg=",
+      "routeKey":"POST /",
+      "stage":"$default",
+      "time":"28/Aug/2022:09:07:56 +0000",
+      "timeEpoch":1661677676604
+   },
+   "body":"{  \"userId\": \"2\",  \"productId\": \"3\",  \"data\": {    \"extraArg\": \"abc\"  }}",
+   "isBase64Encoded":false
+}
 #+end_src
