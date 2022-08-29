@@ -11,7 +11,6 @@ import mail
 import params
 import resp
 
-
 def handler(event, context):
 
     status = 410

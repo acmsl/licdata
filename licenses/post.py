@@ -13,7 +13,6 @@ import pcrepo
 import mail
 import resp
 
-
 def handler(event, context):
 
     headers = event.get("headers", {})
