@@ -1,4 +1,9 @@
-def findPcId(licenseId, installationCode, repo, branch):
+import json
+
+
+def findPcIdByLicenseIdProductAndInstallationCode(
+    licenseId, product, productVersion, installationCode, repo, branch
+):
     try:
         allPcs = repo.get_contents("pcs.json", ref=branch)
     except:
@@ -15,7 +20,11 @@ def findPcId(licenseId, installationCode, repo, branch):
                     pcFile = None
                 if pcFile:
                     pcContent = json.loads(pcFile.decoded_content.decode())
-                    if pcContent["installationCode"] == installationCode:
+                    if (
+                        pcContent["product"] == product
+                        and pcContent["productVersion"] == productVersion
+                        and pcContent["installationCode"] == installationCode
+                    ):
                         return pcId
                 else:
                     print(f"No pc file found at pcs/{pcId}/data.json")

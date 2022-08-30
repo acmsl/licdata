@@ -8,12 +8,15 @@ sys.path.insert(0, "deps")
 
 from github import Github
 
-from licenserepo import findLicenseId
+import licenserepo
+import params
 
 
 def handler(event, context):
 
     token = os.environ["GITHUB_TOKEN"]
+    repository = os.environ["GITHUB_REPO"]
+    branch = os.environ["GITHUB_BRANCH"]
 
     headers = event.get("headers", {})
     host = headers.get("host", event.get("host", ""))
@@ -21,24 +24,23 @@ def handler(event, context):
 
     status = 200
     file = None
-    branch = "gh-pages"
     defaultComment = "acmsl-licdata-isValid-license"
 
     body = event.get("body", {})
     if body:
         body = json.loads(body)
-        clientId = body.get("clientId", event.get("clientId", "missing"))
-        installationCode = body.get(
-            "installationCode", event.get("installationCode", "missing")
-        )
-    else:
-        clientId = event.get("clientId", "missing")
-        installationCode = event.get("installationCode", "missing")
 
     g = Github(token)
-    repo = g.get_repo("acmsl/licdata")
+    repo = g.get_repo(repository)
 
-    licenseId = findLicenseId(clientId, installationCode, repo, branch)
+    licenseId = licenserepo.findLicenseIdByEmailProductAndInstallationCode(
+        params.retrieveEmail(body, event),
+        params.retrieveProduct(body, event),
+        params.retrieveProductVersion(body, event),
+        params.retrieveInstallationCode(body, event),
+        repo,
+        branch,
+    )
 
     if licenseId:
         try:
