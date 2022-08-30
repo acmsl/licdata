@@ -3,9 +3,12 @@ import os
 import sys
 from datetime import datetime
 
+sys.path.insert(0, "common")
 sys.path.insert(0, "deps")
 
 from github import Github
+
+from licenserepo import findLicenseId
 
 
 def handler(event, context):
@@ -59,50 +62,3 @@ def handler(event, context):
     response["statusCode"] = status
 
     return response
-
-
-def findPcId(licenseId, installationCode, repo, branch):
-    try:
-        allPcs = repo.get_contents("pcs.json", ref=branch)
-    except:
-        allPcs = None
-    if allPcs:
-        allPcsContent = json.loads(allPcs.decoded_content.decode())
-        pcs = [x for x in allPcsContent if x["licenseId"] == licenseId]
-        if pcs:
-            for pc in pcs:
-                pcId = pc["id"]
-                try:
-                    pcFile = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
-                except:
-                    pcFile = None
-                if pcFile:
-                    pcContent = json.loads(pcFile.decoded_content.decode())
-                    if pcContent["installationCode"] == installationCode:
-                        return pcId
-                else:
-                    print(f"No pc file found at pcs/{pcId}/data.json")
-        else:
-            print(f"No pc found for license {licenseId}")
-
-    return None
-
-
-def findLicenseId(clientId, installationCode, repo, branch):
-    try:
-        allLicenses = repo.get_contents("licenses.json", ref=branch)
-    except:
-        allLicenses = None
-    if allLicenses:
-        allLicensesContent = json.loads(allLicenses.decoded_content.decode())
-        licenses = [x for x in allLicensesContent if x["clientId"] == clientId]
-        if licenses:
-            for license in licenses:
-                licenseId = license["id"]
-                pcId = findPcId(licenseId, installationCode, repo, branch)
-                if pcId:
-                    return licenseId
-        else:
-            print(f"No license found for clientId {clientId}")
-
-    return None
