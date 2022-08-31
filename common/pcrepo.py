@@ -2,45 +2,92 @@ import json
 from uuid import uuid4
 
 
-def insert(product, productVersion, installationCode, pcDescription, repo, branch):
+def findById(pcId, repo, branch):
+    pc = None
+    try:
+        file = repo.get_contents(f"pc/{pcId}/data.json", ref=branch)
+    except:
+        file = None
+    if file:
+        pc = json.loads(file.decoded_content.decode())
+    return pc
+
+
+def insert(
+    licenses, product, productVersion, installationCode, pcDescription, repo, branch
+):
     result = str(uuid4())
 
+    item = {}
+    item["id"] = result
+    item["installationCode"] = installationCode
+
     try:
-        file = repo.get_contents("pcs.json", ref=branch)
+        file = repo.get_contents("pcs/data.json", ref=branch)
     except:
         file = None
     if file is None:
         content = []
-        item = {}
-        item["id"] = result
+        content.append(item)
+        repo.create_file(
+            "pcs/data.json", "First PC", json.dumps(content), branch=branch
+        )
+        item["licenses"] = licenses
         item["product"] = product
         item["productVersion"] = productVersion
-        item["installationCode"] = installationCode
         item["description"] = pcDescription
-        content.append(item)
-        repo.create_file("pcs.json", "First PC", json.dumps(content), branch=branch)
+        repo.create_file(
+            f"pcs/{result}/data.json",
+            f"Created {result} pc",
+            json.dumps(item),
+            branch=branch,
+        )
     else:
         content = json.loads(file.decoded_content.decode())
         el = [x for x in content if x["installationCode"] == installationCode]
         if el:
             result = el[0]["id"]
         else:
-            item = {}
-            item["id"] = result
-            item["product"] = product
-            item["productVersion"] = productVersion
-            item["installationCode"] = installationCode
-            item["description"] = pcDescription
             content.append(item)
             repo.update_file(
-                "pcs.json",
+                "pcs/data.json",
                 "acmsl-licdata",
                 json.dumps(content),
                 file.sha,
                 branch=branch,
             )
+            item["licenses"] = licenses
+            item["product"] = product
+            item["productVersion"] = productVersion
+            item["description"] = pcDescription
+            repo.create_file(
+                f"pcs/{result}/data.json",
+                f"Created {result} pc",
+                json.dumps(item),
+                branch=branch,
+            )
 
     return result
+
+
+def addLicense(pcId, licenseId, repo, branch):
+    try:
+        pcFile = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
+    except:
+        pcFile = None
+    if pcFile:
+        content = json.loads(pcFile.decoded_content.decode())
+        content["licenses"].append(licenseId)
+        content.append(item)
+        repo.update_file(
+            f"pcs/{pcId}/data.json",
+            "acmsl-licdata",
+            json.dumps(content),
+            file.sha,
+            branch=branch,
+        )
+    else:
+        print(f"Cannot add license to non-existing pc {pcId}")
 
 
 def filterByProductAndInstallationCode(
@@ -70,21 +117,20 @@ def findByLicenseIdProductAndInstallationCode(
 ):
     pc = findByProductAndInstallationCode
     try:
-        allPcs = repo.get_contents("pcs.json", ref=branch)
+        allPcs = repo.get_contents("pcs/data.json", ref=branch)
     except:
         allPcs = None
     if allPcs:
-        allPcsContent = json.loads(allPcs.decoded_content.decode())
-        pcs = [x for x in allPcsContent if licenseId in x["licenses"]]
-        if pcs:
-            pc = filterByProductAndInstallationCode(
-                pcs, product, productVersion, installationCode, repo, branch
-            )
-            if pc:
-                return pc
-
+        pcs = json.loads(allPcs.decoded_content.decode())
+        pc = filterByProductAndInstallationCode(
+            pcs, product, productVersion, installationCode, repo, branch
+        )
+        if pc and licenseId in pc["licenses"]:
+            return pc
         else:
             print(f"No pc found for license {licenseId}")
+    else:
+        print("No pcs found")
 
     return None
 
@@ -93,7 +139,7 @@ def findByProductAndInstallationCode(
     product, productVersion, installationCode, repo, branch
 ):
     try:
-        allPcs = repo.get_contents("pcs.json", ref=branch)
+        allPcs = repo.get_contents("pcs/data.json", ref=branch)
     except:
         allPcs = None
     if allPcs:
