@@ -1,1 +1,11 @@
-[{"id": "b88fb26f-2e92-480b-8dac-e0dc026de2d6", "email": "jose@io.builders"}, {"id": "14975b48-d7ef-4198-8b50-c241463cefe3", "email": "jose.sanleandro@gmail.com"}, {"clientId": "81cceb66-4cc0-4271-a799-313cca093ad6", "email": "jose+3@io.builders"}]
+[
+  { "id": "b88fb26f-2e92-480b-8dac-e0dc026de2d6", "email": "jose@io.builders" },
+  {
+    "id": "14975b48-d7ef-4198-8b50-c241463cefe3",
+    "email": "jose.sanleandro@gmail.com"
+  },
+  {
+    "id": "81cceb66-4cc0-4271-a799-313cca093ad6",
+    "email": "jose+3@io.builders"
+  }
+]
