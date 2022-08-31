@@ -4,7 +4,6 @@ import sys
 from datetime import datetime
 
 sys.path.insert(0, "common")
-sys.path.insert(0, "deps")
 
 from github import Github
 
@@ -22,9 +21,8 @@ def handler(event, context):
     host = headers.get("host", event.get("host", ""))
     response = {"headers": {"Content-Type": "application/json"}}
 
-    status = 200
+    status = 410
     file = None
-    defaultComment = "acmsl-licdata-isValid-license"
 
     body = event.get("body", {})
     if body:
@@ -32,6 +30,8 @@ def handler(event, context):
 
     g = Github(token)
     repo = g.get_repo(repository)
+
+    print(body)
 
     licenseId = licenserepo.findLicenseIdByEmailProductAndInstallationCode(
         params.retrieveEmail(body, event),
@@ -58,8 +58,11 @@ def handler(event, context):
                 status = 200
             else:
                 status = 410
+        else:
+            status = 404
     else:
         print("licenseId: not found")
+        status = 404
 
     response["statusCode"] = status
 

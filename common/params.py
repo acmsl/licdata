@@ -23,3 +23,7 @@ def retrieveProduct(body, event):
 
 def retrieveProductVersion(body, event):
     return retrieveParam("productVersion", body, event, "1")
+
+
+def retrieveDescription(body, event):
+    return retrieveParam("description", body, event, "1")

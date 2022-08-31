@@ -1,0 +1,153 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "apigateway:DELETE",
+        "apigateway:PATCH",
+        "apigateway:POST",
+        "apigateway:PUT",
+        "apigateway:TagResource",
+        "apigateway:UpdateRestApiPolicy"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:*::/apikeys*",
+        "arn:aws:apigateway:*::/apis*",
+        "arn:aws:apigateway:*::/restapis*",
+        "arn:aws:apigateway:*::/tags*",
+        "arn:aws:apigateway:*::/usageplans*"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["apigateway:GET"],
+      "Resource": ["*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "cloudformation:CreateChangeSet",
+        "cloudformation:CreateStack",
+        "cloudformation:CreateUploadBucket",
+        "cloudformation:DeleteStack",
+        "cloudformation:Describe*",
+        "cloudformation:ExecuteChangeSet",
+        "cloudformation:UpdateStack"
+      ],
+      "Resource": ["arn:aws:cloudformation:eu-west-1:143002368488:stack/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "cloudformation:DeleteChangeSet",
+        "cloudformation:DescribeStacks",
+        "cloudformation:Get*",
+        "cloudformation:List*",
+        "cloudformation:ValidateTemplate"
+      ],
+      "Resource": ["*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["cloudwatch:GetMetricStatistics"],
+      "Resource": ["*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["events:Put*", "events:Remove*", "events:Delete*"],
+      "Resource": ["arn:aws:events:eu-west-1:143002368488:rule/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["events:DescribeRule"],
+      "Resource": ["arn:aws:events:eu-west-1:143002368488:rule/licdata-*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["iam:PassRole"],
+      "Resource": ["arn:aws:iam::143002368488:role/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "iam:GetRole",
+        "iam:CreateRole",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:DeleteRole"
+      ],
+      "Resource": ["arn:aws:iam::143002368488:role/licdata-*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "lambda:AddPermission",
+        "lambda:CreateAlias",
+        "lambda:DeleteFunction",
+        "lambda:InvokeFunction",
+        "lambda:PublishVersion",
+        "lambda:RemovePermission",
+        "lambda:TagResource",
+        "lambda:Update*"
+      ],
+      "Resource": ["arn:aws:lambda:eu-west-1:143002368488:function:licdata-*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["lambda:Get*", "lambda:List*", "lambda:CreateFunction"],
+      "Resource": ["*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:DeleteLogGroup"
+      ],
+      "Resource": ["arn:aws:logs:eu-west-1:143002368488:*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["logs:PutLogEvents", "logs:PutSubscriptionFilter"],
+      "Resource": ["arn:aws:logs:eu-west-1:143002368488:*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "logs:CreateLogDelivery",
+        "logs:DescribeLogStreams",
+        "logs:DescribeLogGroups",
+        "logs:FilterLogEvents"
+      ],
+      "Resource": ["*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+      "Resource": ["arn:aws:s3:::licdata*serverlessdeploy*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:ListBucket",
+        "s3:GetBucketPolicy",
+        "s3:PutBucketPolicy",
+        "s3:DeleteBucketPolicy",
+        "s3:ListBucketVersions",
+        "s3:PutAccelerateConfiguration",
+        "s3:GetEncryptionConfiguration",
+        "s3:PutEncryptionConfiguration"
+      ],
+      "Resource": ["arn:aws:s3:::licdata*serverlessdeploy*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["s3:CreateBucket"],
+      "Resource": ["arn:aws:s3:::*"],
+      "Effect": "Allow"
+    }
+  ]
+}
