@@ -3,14 +3,28 @@ import json
 import pcrepo
 import clientrepo
 
-from datetime import datetime
+import datetime
 from uuid import uuid4
+
+
+def findById(licenseId, repo, branch):
+    license = None
+    try:
+        file = repo.get_contents(f"licenses/{licenseId}/data.json", ref=branch)
+    except:
+        file = None
+    if file:
+        license = json.loads(file.decoded_content.decode())
+        license["licenseEnd"] = datetime.fromisoformat(
+            licenseContent.get("licenseEnd", "1970-01-01")
+        )
+    return license
 
 
 def insert(clientId, repo, branch):
     result = str(uuid4())
 
-    now = datetime.now()
+    now = datetime.datetime.now()
     orderDate = now.strftime("%Y/%m/%d")
     deliveryDate = orderDate
     licenseType = ""
@@ -18,33 +32,39 @@ def insert(clientId, repo, branch):
     item = {}
     item["id"] = result
     item["clientId"] = clientId
-    item["orderDate"] = orderDate
-    item["deliveryDate"] = deliveryDate
-    item["licenseType"] = licenseType
-    item["licenseEnd"] = licenseEnd
 
     try:
-        file = repo.get_contents("licenses.json", ref=branch)
+        file = repo.get_contents("licenses/data.json", ref=branch)
     except:
         file = None
     if file is None:
-        now = datetime.now()
+        now = datetime.datetime.now()
         content = []
         content.append(item)
         repo.create_file(
-            "licenses.json", "First license", json.dumps(content), branch=branch
+            "licenses/data.json", "First license", json.dumps(content), branch=branch
         )
     else:
         content = json.loads(file.decoded_content.decode())
         content.append(item)
         repo.update_file(
-            "licenses.json",
+            "licenses/data.json",
             "acmsl-licdata",
             json.dumps(content),
             file.sha,
             branch=branch,
         )
 
+    item["orderDate"] = orderDate
+    item["deliveryDate"] = deliveryDate
+    item["licenseType"] = licenseType
+    item["licenseEnd"] = licenseEnd
+    repo.create_file(
+        f"licenses/{result}/data.json",
+        f"Created {result} license",
+        json.dumps(item),
+        branch=branch,
+    )
     return result
 
 
@@ -52,7 +72,7 @@ def findByClientIdProductAndInstallationCode(
     clientId, product, productVersion, installationCode, repo, branch
 ):
     try:
-        allLicenses = repo.get_contents("licenses.json", ref=branch)
+        allLicenses = repo.get_contents("licenses/data.json", ref=branch)
     except:
         allLicenses = None
     if allLicenses:
@@ -84,7 +104,7 @@ def findByEmailProductAndInstallationCode(
         print(client)
         clientId = client.get("id", "missing")
         try:
-            allLicenses = repo.get_contents("licenses.json", ref=branch)
+            allLicenses = repo.get_contents("licenses/data.json", ref=branch)
         except:
             allLicenses = None
         if allLicenses:

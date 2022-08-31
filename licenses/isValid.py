@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from datetime import datetime
+import datetime
 
 sys.path.insert(0, "common")
 
@@ -43,18 +43,9 @@ def handler(event, context):
     )
 
     if licenseId:
-        try:
-            file = repo.get_contents(f"licenses/{licenseId}/data.json", ref=branch)
-        except:
-            file = None
-        if file:
-            licenseContent = json.loads(file.decoded_content.decode())
-            licenseEnd = datetime.fromisoformat(
-                licenseContent.get("licenseEnd", "1970-01-01")
-            )
-            print("LicenseEnd: ")
-            print(str(licenseEnd))
-            if licenseEnd >= datetime.now():
+        license = licenserepo.findById(licenseId, repo, branch)
+        if license:
+            if license["licenseEnd"] >= datetime.datetime.now():
                 status = 200
             else:
                 status = 410
