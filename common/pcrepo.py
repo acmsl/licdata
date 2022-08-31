@@ -13,9 +13,7 @@ def findById(pcId, repo, branch):
     return pc
 
 
-def insert(
-    licenses, product, productVersion, installationCode, pcDescription, repo, branch
-):
+def insert(licenses, installationCode, pcDescription, repo, branch):
     result = str(uuid4())
 
     item = {}
@@ -33,8 +31,6 @@ def insert(
             "pcs/data.json", "First PC", json.dumps(content), branch=branch
         )
         item["licenses"] = licenses
-        item["product"] = product
-        item["productVersion"] = productVersion
         item["description"] = pcDescription
         repo.create_file(
             f"pcs/{result}/data.json",
@@ -57,8 +53,6 @@ def insert(
                 branch=branch,
             )
             item["licenses"] = licenses
-            item["product"] = product
-            item["productVersion"] = productVersion
             item["description"] = pcDescription
             repo.create_file(
                 f"pcs/{result}/data.json",
@@ -72,13 +66,12 @@ def insert(
 
 def addLicense(pcId, licenseId, repo, branch):
     try:
-        pcFile = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
+        file = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
     except:
-        pcFile = None
-    if pcFile:
-        content = json.loads(pcFile.decoded_content.decode())
+        file = None
+    if file:
+        content = json.loads(file.decoded_content.decode())
         content["licenses"].append(licenseId)
-        content.append(item)
         repo.update_file(
             f"pcs/{pcId}/data.json",
             "acmsl-licdata",
@@ -90,41 +83,31 @@ def addLicense(pcId, licenseId, repo, branch):
         print(f"Cannot add license to non-existing pc {pcId}")
 
 
-def filterByProductAndInstallationCode(
-    items, product, productVersion, installationCode, repo, branch
-):
+def filterByInstallationCode(items, installationCode, repo, branch):
     for pc in items:
         pcId = pc["id"]
         try:
-            pcFile = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
+            file = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
         except:
-            pcFile = None
-        if pcFile:
-            pcContent = json.loads(pcFile.decoded_content.decode())
-            if (
-                pcContent["product"] == product
-                and pcContent["productVersion"] == productVersion
-                and pcContent["installationCode"] == installationCode
-            ):
-                return pcContent
+            file = None
+        if file:
+            content = json.loads(file.decoded_content.decode())
+            if content["installationCode"] == installationCode:
+                return content
         else:
             print(f"No pc file found at pcs/{pcId}/data.json")
+
     return None
 
 
-def findByLicenseIdProductAndInstallationCode(
-    licenseId, product, productVersion, installationCode, repo, branch
-):
-    pc = findByProductAndInstallationCode
+def findByLicenseIdAndInstallationCode(licenseId, installationCode, repo, branch):
     try:
         allPcs = repo.get_contents("pcs/data.json", ref=branch)
     except:
         allPcs = None
     if allPcs:
         pcs = json.loads(allPcs.decoded_content.decode())
-        pc = filterByProductAndInstallationCode(
-            pcs, product, productVersion, installationCode, repo, branch
-        )
+        pc = filterByInstallationCode(pcs, installationCode, repo, branch)
         if pc and licenseId in pc["licenses"]:
             return pc
         else:
@@ -135,9 +118,7 @@ def findByLicenseIdProductAndInstallationCode(
     return None
 
 
-def findByProductAndInstallationCode(
-    product, productVersion, installationCode, repo, branch
-):
+def findByInstallationCode(installationCode, repo, branch):
     try:
         allPcs = repo.get_contents("pcs/data.json", ref=branch)
     except:
@@ -145,8 +126,8 @@ def findByProductAndInstallationCode(
     if allPcs:
         allPcsContent = json.loads(allPcs.decoded_content.decode())
         if allPcsContent:
-            return filterByProductAndInstallationCode(
-                allPcsContent, product, productVersion, installationCode, repo, branch
+            return filterByInstallationCode(
+                allPcsContent, installationCode, repo, branch
             )
     else:
         print(f"No pcs found")

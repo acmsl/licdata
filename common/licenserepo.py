@@ -15,13 +15,13 @@ def findById(licenseId, repo, branch):
         file = None
     if file:
         license = json.loads(file.decoded_content.decode())
-        license["licenseEnd"] = datetime.fromisoformat(
-            licenseContent.get("licenseEnd", "1970-01-01")
+        license["licenseEnd"] = datetime.datetime.strptime(
+            license.get("licenseEnd", "1970/01/01"), "%Y/%m/%d"
         )
     return license
 
 
-def insert(clientId, repo, branch):
+def insert(clientId, product, productVersion, repo, branch):
     result = str(uuid4())
 
     now = datetime.datetime.now()
@@ -32,6 +32,8 @@ def insert(clientId, repo, branch):
     item = {}
     item["id"] = result
     item["clientId"] = clientId
+    item["product"] = product
+    item["productVersion"] = productVersion
 
     try:
         file = repo.get_contents("licenses/data.json", ref=branch)
@@ -68,9 +70,7 @@ def insert(clientId, repo, branch):
     return result
 
 
-def findByClientIdProductAndInstallationCode(
-    clientId, product, productVersion, installationCode, repo, branch
-):
+def findByClientIdAndInstallationCode(clientId, installationCode, repo, branch):
     try:
         allLicenses = repo.get_contents("licenses/data.json", ref=branch)
     except:
@@ -80,10 +80,8 @@ def findByClientIdProductAndInstallationCode(
         licenses = [x for x in allLicensesContent if x["clientId"] == clientId]
         if licenses:
             for license in licenses:
-                pc = pcrepo.findByLicenseIdProductAndInstallationCode(
+                pc = pcrepo.findByLicenseIdAndInstallationCode(
                     license["id"],
-                    product,
-                    productVersion,
                     installationCode,
                     repo,
                     branch,
@@ -109,21 +107,25 @@ def findByEmailProductAndInstallationCode(
             allLicenses = None
         if allLicenses:
             allLicensesContent = json.loads(allLicenses.decoded_content.decode())
-            licenses = [x for x in allLicensesContent if x["clientId"] == clientId]
+            licenses = [
+                x
+                for x in allLicensesContent
+                if x["clientId"] == clientId
+                and x["product"] == product
+                and x["productVersion"] == productVersion
+            ]
             if licenses:
                 for license in licenses:
-                    pc = pcrepo.findByLicenseIdProductAndInstallationCode(
+                    pc = pcrepo.findByLicenseIdAndInstallationCode(
                         license["id"],
-                        product,
-                        productVersion,
                         installationCode,
                         repo,
                         branch,
                     )
                     if pc:
-                        return license
+                        return findById(license["id"], repo, branch)
             else:
-                print(f"No license found for clientId {clientId}")
+                print(f"No licenses found for clientId {clientId}")
         else:
             print("No licenses found")
     else:

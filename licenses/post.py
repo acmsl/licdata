@@ -48,14 +48,16 @@ def handler(event, context):
         clientId = clientrepo.insert(email, repo, branch)
         print(f"Inserting new client {email} -> {clientId}")
 
-    license = licenserepo.findByClientIdProductAndInstallationCode(
-        clientId, productName, productVersion, installationCode, repo, branch
+    license = licenserepo.findByClientIdAndInstallationCode(
+        clientId, installationCode, repo, branch
     )
     if license:
         licenseId = license["id"]
     else:
         licenseId = licenserepo.insert(
             clientId,
+            productName,
+            productVersion,
             repo,
             branch,
         )
@@ -63,9 +65,7 @@ def handler(event, context):
         if license:
             status = 201
 
-    pc = pcrepo.findByProductAndInstallationCode(
-        productName, productVersion, installationCode, repo, branch
-    )
+    pc = pcrepo.findByInstallationCode(installationCode, repo, branch)
     if pc:
         if not licenseId in pc["licenses"]:
             pcId = pc["id"]
@@ -74,8 +74,6 @@ def handler(event, context):
         else:
             pcId = pcrepo.insert(
                 [licenseId],
-                productName,
-                productVersion,
                 installationCode,
                 description,
                 repo,
@@ -85,8 +83,6 @@ def handler(event, context):
     else:
         pcId = pcrepo.insert(
             [licenseId],
-            productName,
-            productVersion,
             installationCode,
             description,
             repo,

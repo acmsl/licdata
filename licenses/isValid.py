@@ -33,7 +33,7 @@ def handler(event, context):
 
     print(body)
 
-    licenseId = licenserepo.findLicenseIdByEmailProductAndInstallationCode(
+    license = licenserepo.findByEmailProductAndInstallationCode(
         params.retrieveEmail(body, event),
         params.retrieveProduct(body, event),
         params.retrieveProductVersion(body, event),
@@ -42,17 +42,12 @@ def handler(event, context):
         branch,
     )
 
-    if licenseId:
-        license = licenserepo.findById(licenseId, repo, branch)
-        if license:
-            if license["licenseEnd"] >= datetime.datetime.now():
-                status = 200
-            else:
-                status = 410
+    if license:
+        if license["licenseEnd"] >= datetime.datetime.now():
+            status = 200
         else:
-            status = 404
+            status = 410
     else:
-        print("licenseId: not found")
         status = 404
 
     response["statusCode"] = status
