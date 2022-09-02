@@ -77,10 +77,11 @@ def handler(event, context):
         response["headers"].update({"Location": f"https://{host}/licenses/{licenseId}"})
 
     if status == 201:
-        mail.send_email(
-            f"New license: {licenseId}",
-            f"""<html>
-  <body>
+        try:
+            mail.send_email(
+                f"New license: {licenseId}",
+                f"""<html>
+<body>
     <h1>New license: {licenseId}</h1>
     <ul>
       <li>license: {licenseId}</li>
@@ -92,8 +93,10 @@ def handler(event, context):
   </body>
 </html>
 """,
-            "html",
-        )
+                "html",
+            )
+        except:
+            print(f"Error sending new-license email")
 
     response["statusCode"] = status
 
