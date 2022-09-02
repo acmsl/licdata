@@ -1,8 +1,15 @@
 import json
 from uuid import uuid4
+import os
+from github import Github
 
 
-def findById(clientId, repo, branch):
+def findById(clientId):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     client = None
     try:
         file = repo.get_contents(f"clients/{clientId}/data.json", ref=branch)
@@ -13,7 +20,12 @@ def findById(clientId, repo, branch):
     return client
 
 
-def insert(email, repo, branch):
+def insert(email):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     result = str(uuid4())
 
     item = {}
@@ -59,7 +71,12 @@ def insert(email, repo, branch):
     return result
 
 
-def findByEmail(email, repo, branch):
+def findByEmail(email):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     try:
         allClients = repo.get_contents("clients/data.json", ref=branch)
     except:

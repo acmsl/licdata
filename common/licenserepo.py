@@ -1,4 +1,6 @@
 import json
+import os
+from github import Github
 
 import pcrepo
 import clientrepo
@@ -7,7 +9,12 @@ import datetime
 from uuid import uuid4
 
 
-def findById(licenseId, repo, branch):
+def findById(licenseId):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     license = None
     try:
         file = repo.get_contents(f"licenses/{licenseId}/data.json", ref=branch)
@@ -97,9 +104,14 @@ def findByClientIdProductAndInstallationCode(
 
 
 def findByEmailProductAndInstallationCode(
-    email, product, productVersion, installationCode, repo, branch
+    email, product, productVersion, installationCode
 ):
-    client = clientrepo.findByEmail(email, repo, branch)
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
+    client = clientrepo.findByEmail(email)
     if client:
         print(client)
         clientId = client.get("id", "missing")

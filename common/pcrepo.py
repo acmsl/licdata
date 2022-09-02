@@ -1,11 +1,18 @@
 import json
 from uuid import uuid4
+import os
+from github import Github
 
 
-def findById(pcId, repo, branch):
+def findById(id):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     pc = None
     try:
-        file = repo.get_contents(f"pc/{pcId}/data.json", ref=branch)
+        file = repo.get_contents(f"pcs/{id}/data.json", ref=branch)
     except:
         file = None
     if file:
@@ -70,7 +77,12 @@ def insert(
     return result
 
 
-def addLicense(pcId, licenseId, repo, branch):
+def addLicense(pcId, licenseId):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     try:
         pcFile = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
     except:
