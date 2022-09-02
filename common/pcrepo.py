@@ -1,11 +1,18 @@
 import json
 from uuid import uuid4
+import os
+from github import Github
 
 
-def findById(pcId, repo, branch):
+def findById(id):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     pc = None
     try:
-        file = repo.get_contents(f"pc/{pcId}/data.json", ref=branch)
+        file = repo.get_contents(f"pcs/{id}/data.json", ref=branch)
     except:
         file = None
     if file:
@@ -13,7 +20,12 @@ def findById(pcId, repo, branch):
     return pc
 
 
-def insert(licenses, installationCode, pcDescription, repo, branch):
+def insert(licenses, installationCode, pcDescription):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     result = str(uuid4())
 
     item = {}
@@ -64,7 +76,12 @@ def insert(licenses, installationCode, pcDescription, repo, branch):
     return result
 
 
-def addLicense(pcId, licenseId, repo, branch):
+def addLicense(pcId, licenseId):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     try:
         file = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
     except:
@@ -100,7 +117,12 @@ def filterByInstallationCode(items, installationCode, repo, branch):
     return None
 
 
-def findByLicenseIdAndInstallationCode(licenseId, installationCode, repo, branch):
+def findByLicenseIdAndInstallationCode(licenseId, installationCode):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     try:
         allPcs = repo.get_contents("pcs/data.json", ref=branch)
     except:
@@ -118,7 +140,12 @@ def findByLicenseIdAndInstallationCode(licenseId, installationCode, repo, branch
     return None
 
 
-def findByInstallationCode(installationCode, repo, branch):
+def findByInstallationCode(installationCode):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     try:
         allPcs = repo.get_contents("pcs/data.json", ref=branch)
     except:

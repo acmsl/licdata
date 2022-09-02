@@ -1,4 +1,6 @@
 import json
+import os
+from github import Github
 
 import pcrepo
 import clientrepo
@@ -7,7 +9,12 @@ import datetime
 from uuid import uuid4
 
 
-def findById(licenseId, repo, branch):
+def findById(licenseId):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     license = None
     try:
         file = repo.get_contents(f"licenses/{licenseId}/data.json", ref=branch)
@@ -21,7 +28,12 @@ def findById(licenseId, repo, branch):
     return license
 
 
-def insert(clientId, product, productVersion, repo, branch):
+def insert(clientId, product, productVersion):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     result = str(uuid4())
 
     now = datetime.datetime.now()
@@ -70,7 +82,12 @@ def insert(clientId, product, productVersion, repo, branch):
     return result
 
 
-def findByClientIdAndInstallationCode(clientId, installationCode, repo, branch):
+def findByClientIdAndInstallationCode(clientId, installationCode):
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
     try:
         allLicenses = repo.get_contents("licenses/data.json", ref=branch)
     except:
@@ -81,10 +98,7 @@ def findByClientIdAndInstallationCode(clientId, installationCode, repo, branch):
         if licenses:
             for license in licenses:
                 pc = pcrepo.findByLicenseIdAndInstallationCode(
-                    license["id"],
-                    installationCode,
-                    repo,
-                    branch,
+                    license["id"], installationCode
                 )
                 if pc:
                     return license
@@ -95,9 +109,14 @@ def findByClientIdAndInstallationCode(clientId, installationCode, repo, branch):
 
 
 def findByEmailProductAndInstallationCode(
-    email, product, productVersion, installationCode, repo, branch
+    email, product, productVersion, installationCode
 ):
-    client = clientrepo.findByEmail(email, repo, branch)
+    token = os.environ["GITHUB_TOKEN"]
+    github = Github(token)
+    repository = os.environ["GITHUB_REPO"]
+    repo = github.get_repo(repository)
+    branch = os.environ["GITHUB_BRANCH"]
+    client = clientrepo.findByEmail(email)
     if client:
         print(client)
         clientId = client.get("id", "missing")
@@ -117,13 +136,10 @@ def findByEmailProductAndInstallationCode(
             if licenses:
                 for license in licenses:
                     pc = pcrepo.findByLicenseIdAndInstallationCode(
-                        license["id"],
-                        installationCode,
-                        repo,
-                        branch,
+                        license["id"], installationCode
                     )
                     if pc:
-                        return findById(license["id"], repo, branch)
+                        return findById(license["id"])
             else:
                 print(f"No licenses found for clientId {clientId}")
         else:
