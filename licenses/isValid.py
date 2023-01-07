@@ -15,6 +15,7 @@ def handler(event, context):
 
     status = 410
     file = None
+    error = True
 
     (body, error) = params.loadBody(event)
 
@@ -108,6 +109,7 @@ def handler(event, context):
       <li>product: {product}</li>
       <li>version: {productVersion}</li>
       <li>installationCode: {installationCode}</li>
+      <li>licenseData: <pre>{licenseData}</pre></li>
     </ul>
   </body>
 </html>
