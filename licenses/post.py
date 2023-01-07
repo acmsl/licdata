@@ -54,6 +54,7 @@ def handler(event, context):
     license = licenserepo.findByClientIdAndInstallationCode(clientId, installationCode)
     if license:
         licenseId = license["id"]
+        licenseData = json.dumps(license, indent=4, sort_keys=True, default=str)
     else:
         licenseId = licenserepo.insert(clientId, productName, productVersion)
         print(f"Inserted new license for client {clientId} -> {licenseId}")

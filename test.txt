@@ -1,1 +1,10 @@
-test2
+{
+  "id": "3b97f90a-ea89-44a8-a530-ddfb2e6bf778",
+  "clientId": "3dc02f5f-68e6-40b6-b7b3-94f4b32a7e51",
+  "product": "missing",
+  "productVersion": "1",
+  "orderDate": "2022/12/09",
+  "deliveryDate": "2022/12/09",
+  "licenseType": "",
+  "licenseEnd": "2022/12/11"
+}
