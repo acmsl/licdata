@@ -1,32 +1,23 @@
-import json
-import os
 import sys
-import datetime
 
 sys.path.insert(0, "common")
+import json
+import os
+import datetime
 
 import incidentrepo
 import licenserepo
 import mail
 import params
+import resp
 
 
 def handler(event, context):
 
-    headers = event.get("headers", {})
-    host = headers.get("host", event.get("host", ""))
-    response = {
-        "headers": {"Content-Type": "application/json"},
-        "event": str(event),
-        "context": str(context),
-    }
-
     status = 410
     file = None
 
-    (body, respBody, error) = params.loadBody(event)
-
-    print(body)
+    (body, error) = params.loadBody(event)
 
     if error:
         status = 500
@@ -125,7 +116,4 @@ def handler(event, context):
                 "html",
             )
 
-    response["statusCode"] = status
-    response["body"] = json.dumps(respBody, indent=4, sort_keys=True, default=str)
-
-    return response
+    return resp.buildResponse(status, respBody, event, context)

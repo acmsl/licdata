@@ -1,15 +1,13 @@
 import json
-import os
-from github import Github
-
 import datetime
 
+
+from githubrepo import githubrepo
+
+
 def findById(prelicenseId):
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    repo = github.get_repo(repository)
-    branch = os.environ["GITHUB_BRANCH"]
+    repo = githubrepo.getRepo()
+    branch = githubrepo.getBranch()
     prelicense = None
     try:
         file = repo.get_contents(f"prelicenses/{prelicenseId}/data.json", ref=branch)
@@ -24,12 +22,9 @@ def findById(prelicenseId):
 
 
 def insert(name, clientId, product, productVersion):
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    repo = github.get_repo(repository)
-    branch = os.environ["GITHUB_BRANCH"]
-    result = str(uuid4())
+    repo = githubrepo.getRepo()
+    branch = githubrepo.getBranch()
+    result = githubrepo.newId()
 
     now = datetime.datetime.now()
     orderDate = now.strftime("%Y/%m/%d")
@@ -51,7 +46,10 @@ def insert(name, clientId, product, productVersion):
         content = []
         content.append(item)
         repo.create_file(
-            "prelicenses/data.json", "First prelicense", json.dumps(content), branch=branch
+            "prelicenses/data.json",
+            "First prelicense",
+            json.dumps(content),
+            branch=branch,
         )
     else:
         content = json.loads(file.decoded_content.decode())
@@ -74,12 +72,10 @@ def insert(name, clientId, product, productVersion):
     )
     return result
 
+
 def findByNameProductAndProductVersion(name, productName, productVersion):
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    repo = github.get_repo(repository)
-    branch = os.environ["GITHUB_BRANCH"]
+    repo = githubrepo.getRepo()
+    branch = githubrepo.getBranch()
     prelicense = None
     try:
         allPrelicenses = repo.get_contents("prelicenses/data.json", ref=branch)
@@ -87,7 +83,9 @@ def findByNameProductAndProductVersion(name, productName, productVersion):
         allPrelicenses = None
     if allPrelicenses:
         prelicenses = json.loads(allPrelicenses.decoded_content.decode())
-        prelicense = filterByProductAndProductVersion(prelicenses, product, productVersion, repo, branch)
+        prelicense = filterByProductAndProductVersion(
+            prelicenses, product, productVersion, repo, branch
+        )
         if prelicense and name in prelicense["name"]:
             return findById(prelicense["id"])
         else:

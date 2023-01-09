@@ -1,15 +1,11 @@
 import json
-from uuid import uuid4
-import os
-from github import Github
+
+import githubrepo
 
 
 def findById(id):
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    repo = github.get_repo(repository)
-    branch = os.environ["GITHUB_BRANCH"]
+    repo = githubrepo.getRepo()
+    branch = githubrepo.getBranch()
     incident = None
     try:
         file = repo.get_contents(f"incidents/{id}/data.json", ref=branch)
@@ -21,12 +17,9 @@ def findById(id):
 
 
 def insert(licenseId, email, product, productVersion, installationCode):
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    repo = github.get_repo(repository)
-    branch = os.environ["GITHUB_BRANCH"]
-    result = str(uuid4())
+    repo = githubrepo.getRepo()
+    branch = githubrepo.getBranch()
+    result = githubrepo.newId()
 
     item = {}
     item["id"] = result

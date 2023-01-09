@@ -23,16 +23,16 @@ def loadBody(event):
                     body = json.loads(base64.decodebytes(str.encode(bodyEntry)))
                     error = False
                 except Exception as givingUp:
-                    respBody = {
+                    body = {
                         "error": "Not json, not base64-encoded",
                         "errors": [givingUp, encodingError],
                     }
         else:
-            respBody = {"error": "Unknown input"}
+            body = {"error": "Unknown input"}
     else:
         print("bodyEntry is null")
 
-    return (body, respBody, error)
+    return (body, error)
 
 
 def retrieveParam(paramName, body, event, defaultValue):
@@ -40,6 +40,10 @@ def retrieveParam(paramName, body, event, defaultValue):
         return body.get(paramName, event.get(paramName, defaultValue))
     else:
         return event.get(paramName, defaultValue)
+
+
+def retrieveId(body, event):
+    return retrieveParam("id", body, event, None)
 
 
 def retrieveClientId(body, event):
