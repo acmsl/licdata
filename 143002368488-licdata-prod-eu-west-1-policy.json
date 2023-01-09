@@ -20,8 +20,12 @@
       "Effect": "Allow"
     },
     {
-      "Action": ["apigateway:GET"],
-      "Resource": ["*"],
+      "Action": [
+        "apigateway:GET"
+      ],
+      "Resource": [
+        "*"
+      ],
       "Effect": "Allow"
     },
     {
@@ -34,7 +38,9 @@
         "cloudformation:ExecuteChangeSet",
         "cloudformation:UpdateStack"
       ],
-      "Resource": ["arn:aws:cloudformation:eu-west-1:143002368488:stack/*"],
+      "Resource": [
+        "arn:aws:cloudformation:eu-west-1:143002368488:stack/*"
+      ],
       "Effect": "Allow"
     },
     {
@@ -45,27 +51,47 @@
         "cloudformation:List*",
         "cloudformation:ValidateTemplate"
       ],
-      "Resource": ["*"],
+      "Resource": [
+        "*"
+      ],
       "Effect": "Allow"
     },
     {
-      "Action": ["cloudwatch:GetMetricStatistics"],
-      "Resource": ["*"],
+      "Action": [
+        "cloudwatch:GetMetricStatistics"
+      ],
+      "Resource": [
+        "*"
+      ],
       "Effect": "Allow"
     },
     {
-      "Action": ["events:Put*", "events:Remove*", "events:Delete*"],
-      "Resource": ["arn:aws:events:eu-west-1:143002368488:rule/*"],
+      "Action": [
+        "events:Put*",
+        "events:Remove*",
+        "events:Delete*"
+      ],
+      "Resource": [
+        "arn:aws:events:eu-west-1:143002368488:rule/*"
+      ],
       "Effect": "Allow"
     },
     {
-      "Action": ["events:DescribeRule"],
-      "Resource": ["arn:aws:events:eu-west-1:143002368488:rule/licdata-*"],
+      "Action": [
+        "events:DescribeRule"
+      ],
+      "Resource": [
+        "arn:aws:events:eu-west-1:143002368488:rule/licdata-*"
+      ],
       "Effect": "Allow"
     },
     {
-      "Action": ["iam:PassRole"],
-      "Resource": ["arn:aws:iam::143002368488:role/*"],
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::143002368488:role/*"
+      ],
       "Effect": "Allow"
     },
     {
@@ -76,7 +102,9 @@
         "iam:DeleteRolePolicy",
         "iam:DeleteRole"
       ],
-      "Resource": ["arn:aws:iam::143002368488:role/licdata-*"],
+      "Resource": [
+        "arn:aws:iam::143002368488:role/licdata-*"
+      ],
       "Effect": "Allow"
     },
     {
@@ -90,12 +118,20 @@
         "lambda:TagResource",
         "lambda:Update*"
       ],
-      "Resource": ["arn:aws:lambda:eu-west-1:143002368488:function:licdata-*"],
+      "Resource": [
+        "arn:aws:lambda:eu-west-1:143002368488:function:licdata-*"
+      ],
       "Effect": "Allow"
     },
     {
-      "Action": ["lambda:Get*", "lambda:List*", "lambda:CreateFunction"],
-      "Resource": ["*"],
+      "Action": [
+        "lambda:Get*",
+        "lambda:List*",
+        "lambda:CreateFunction"
+      ],
+      "Resource": [
+        "*"
+      ],
       "Effect": "Allow"
     },
     {
@@ -104,12 +140,20 @@
         "logs:CreateLogStream",
         "logs:DeleteLogGroup"
       ],
-      "Resource": ["arn:aws:logs:eu-west-1:143002368488:*"],
+      "Resource": [
+        "arn:aws:logs:eu-west-1:143002368488:*"
+      ],
       "Effect": "Allow"
     },
     {
-      "Action": ["logs:PutLogEvents", "logs:PutSubscriptionFilter"],
-      "Resource": ["arn:aws:logs:eu-west-1:143002368488:*"],
+      "Action": [
+        "logs:PutLogEvents",
+        "logs:PutSubscriptionFilter",
+        "logs:DeleteSubscriptionFilter"
+      ],
+      "Resource": [
+        "arn:aws:logs:eu-west-1:143002368488:*"
+      ],
       "Effect": "Allow"
     },
     {
@@ -119,12 +163,20 @@
         "logs:DescribeLogGroups",
         "logs:FilterLogEvents"
       ],
-      "Resource": ["*"],
+      "Resource": [
+        "*"
+      ],
       "Effect": "Allow"
     },
     {
-      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
-      "Resource": ["arn:aws:s3:::licdata*serverlessdeploy*"],
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::licdata*serverlessdeploy*"
+      ],
       "Effect": "Allow"
     },
     {
@@ -141,12 +193,18 @@
         "s3:GetEncryptionConfiguration",
         "s3:PutEncryptionConfiguration"
       ],
-      "Resource": ["arn:aws:s3:::licdata*serverlessdeploy*"],
+      "Resource": [
+        "arn:aws:s3:::licdata*serverlessdeploy*"
+      ],
       "Effect": "Allow"
     },
     {
-      "Action": ["s3:CreateBucket"],
-      "Resource": ["arn:aws:s3:::*"],
+      "Action": [
+        "s3:CreateBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::*"
+      ],
       "Effect": "Allow"
     }
   ]

@@ -9,35 +9,24 @@ import incidentrepo
 import licenserepo
 import mail
 import params
-import base64
 
 
 def handler(event, context):
 
     headers = event.get("headers", {})
     host = headers.get("host", event.get("host", ""))
-    response = {"headers": {"Content-Type": "application/json"}}
+    response = {
+        "headers": {"Content-Type": "application/json"},
+        "event": str(event),
+        "context": str(context),
+    }
 
     status = 410
     file = None
-    error = True
 
-    body = event.get("body", {})
-    if body:
-        try:
-            body = json.loads(body)
-            error = False
-        except:
-            # no Content-Type: application/json header
-            try:
-                body = json.loads(base64.decodebytes(str.encode(body)))
-                error = False
-            except Exception as inst:
-                body = {
-                    "error": "unparseable input",
-                    "type": type(inst),
-                    "args": inst.args,
-                }
+    (body, respBody, error) = params.loadBody(event)
+
+    print(body)
 
     if error:
         status = 500
@@ -129,7 +118,6 @@ def handler(event, context):
       <li>product: {product}</li>
       <li>version: {productVersion}</li>
       <li>installationCode: {installationCode}</li>
-      <li>licenseData: <pre>{licenseData}</pre></li>
     </ul>
   </body>
 </html>
@@ -137,8 +125,7 @@ def handler(event, context):
                 "html",
             )
 
-    return {
-        "statusCode": status,
-        "headers": {"Content-Type": "application/json"},
-        "body": respBody,
-    }
+    response["statusCode"] = status
+    response["body"] = json.dumps(respBody, indent=4, sort_keys=True, default=str)
+
+    return response
