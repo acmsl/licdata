@@ -2,6 +2,8 @@ import sys
 
 sys.path.insert(0, "common")
 
+import json
+
 import clientrepo
 import params
 import resp
@@ -19,11 +21,10 @@ def handler(event, context):
     else:
         id = params.retrieveId(body, event)
 
-        print("id: " + id)
         client = clientrepo.findById(id)
         if client:
             status = 200
-            respBody = json.dumps(client, indent=4, sort_keys=True, default=str)
+            respBody = client
             response = resp.buildResponse(status, respBody, event, context)
         else:
             status = 404
