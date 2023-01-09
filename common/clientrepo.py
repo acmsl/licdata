@@ -1,15 +1,11 @@
 import json
-from uuid import uuid4
-import os
-from github import Github
+
+import githubrepo
 
 
 def findById(clientId):
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    repo = github.get_repo(repository)
-    branch = os.environ["GITHUB_BRANCH"]
+    repo = githubrepo.getRepo()
+    branch = githubrepo.getBranch()
     client = None
     try:
         file = repo.get_contents(f"clients/{clientId}/data.json", ref=branch)
@@ -20,24 +16,23 @@ def findById(clientId):
     return client
 
 
-def insert(email):
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    repo = github.get_repo(repository)
-    branch = os.environ["GITHUB_BRANCH"]
-    result = str(uuid4())
+def insert(email, address, contact, phone):
+    repo = githubrepo.getRepo()
+    branch = githubrepo.getBranch()
+    result = githubrepo.newId()
 
     item = {}
     item["id"] = result
     item["email"] = email
-
     try:
         file = repo.get_contents("clients/data.json", ref=branch)
     except:
         file = None
     if file is None:
         content = []
+        item["address"] = address
+        item["contact"] = contact
+        item["phone"] = phone
         content.append(item)
         repo.create_file(
             "clients/data.json", "First client", json.dumps(content), branch=branch
@@ -62,6 +57,12 @@ def insert(email):
                 file.sha,
                 branch=branch,
             )
+            item = {}
+            item["id"] = result
+            item["email"] = email
+            item["address"] = address
+            item["contact"] = contact
+            item["phone"] = phone
             repo.create_file(
                 f"clients/{result}/data.json",
                 f"Created {result} client",
@@ -72,11 +73,8 @@ def insert(email):
 
 
 def findByEmail(email):
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    repo = github.get_repo(repository)
-    branch = os.environ["GITHUB_BRANCH"]
+    repo = githubrepo.getRepo()
+    branch = githubrepo.getBranch()
     try:
         allClients = repo.get_contents("clients/data.json", ref=branch)
     except:

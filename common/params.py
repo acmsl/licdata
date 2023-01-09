@@ -59,6 +59,10 @@ def retrieveId(body, event):
     return retrieveParam("id", body, event, None)
 
 
+def retrieveId(body, event):
+    return retrieveParam("id", body, event, None)
+
+
 def retrieveClientId(body, event):
     return retrieveParam("clientId", body, event, None)
 
