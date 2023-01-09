@@ -39,7 +39,7 @@ def retrieveParam(paramName, body, event, defaultValue):
     result = None
 
     if body:
-        result = body.get(paramName, event.get(paramName, defaultValue))
+        result = body.get(paramName, {})
 
     if not result:
         queryStringParameters = event.get("queryStringParameters", {})
