@@ -36,10 +36,23 @@ def loadBody(event):
 
 
 def retrieveParam(paramName, body, event, defaultValue):
+    result = None
+
     if body:
-        return body.get(paramName, event.get(paramName, defaultValue))
-    else:
-        return event.get(paramName, defaultValue)
+        result = body.get(paramName, event.get(paramName, defaultValue))
+
+    if not result:
+        queryStringParameters = event.get("queryStringParameters", {})
+        result = queryStringParameters.get(paramName)
+
+    if not result:
+        pathParameters = event.get("pathParameters", {})
+        result = pathParameters.get(paramName)
+
+    if not result:
+        result = event.get(paramName, defaultValue)
+
+    return result
 
 
 def retrieveId(body, event):

@@ -30,13 +30,13 @@ def insert(email, address, contact, phone):
         file = None
     if file is None:
         content = []
-        item["address"] = address
-        item["contact"] = contact
-        item["phone"] = phone
         content.append(item)
         repo.create_file(
             "clients/data.json", "First client", json.dumps(content), branch=branch
         )
+        item["address"] = address
+        item["contact"] = contact
+        item["phone"] = phone
         repo.create_file(
             f"clients/{result}/data.json",
             f"Created {result} client",
@@ -57,9 +57,6 @@ def insert(email, address, contact, phone):
                 file.sha,
                 branch=branch,
             )
-            item = {}
-            item["id"] = result
-            item["email"] = email
             item["address"] = address
             item["contact"] = contact
             item["phone"] = phone
