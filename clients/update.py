@@ -13,6 +13,6 @@ def handler(event, context):
         context,
         common.retrieveAttributes,
         "clients",
-        common.retrieveFilterKeys,
-        common.retrieveAttributeNames,
+        common.retrieveFilterKeys(),
+        common.retrieveAttributeNames(),
     )

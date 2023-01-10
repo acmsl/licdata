@@ -15,32 +15,84 @@ def getBranch():
     return os.environ["GITHUB_BRANCH"]
 
 
-def getRepoAndBranch():
-    return (getRepo(), getBranch())
+def getKey():
+    return os.environ["KEY"]
+
+
+def getRepoBranchAndKey():
+    return (getRepo(), getBranch(), getKey())
 
 
 def newId():
     return str(uuid4())
 
 
+def encrypt(content, key):
+    result = None
+    fernet = Fernet(key)
+
+    try:
+        result = fernet.encrypt(content.encode())
+    except:
+        print(f"{content} could not be encrypted")
+
+    return result
+
+
+def decrypt(content, key):
+    result = None
+    fernet = Fernet(key)
+
+    try:
+        result = fernet.decrypt(content).decode()
+    except:
+        print(f"{content} could not be decrypted")
+
+    return result
+
+
+def decryptFile(file, filePath, key):
+    result = None
+    fernet = Fernet(key)
+
+    decFile = decrypt(file.decoded_content.decode(), key)
+
+    if decFile:
+        result = json.loads(decFile.decode())
+    else:
+        print(f"{filePath} could not be decrypted")
+
+    return result
+
+
 def findById(id, entityType):
-    (repo, branch) = getRepoAndBranch()
+    (repo, branch, key) = getRepoBranchAndKey()
     item = None
     try:
-        file = repo.get_contents(f"{entityType}/{id}/data.json", ref=branch)
+        file = decryptFile(
+            repo.get_contents(f"{entityType}/{id}/data.json", ref=branch),
+            f"{entityType}/{id}/data.json",
+            key,
+        )
     except:
         file = None
+
     if file:
         item = json.loads(file.decoded_content.decode())
+
     return item
 
 
 def findAllByAttributes(filter, entityType):
-    (repo, branch) = getRepoAndBranch()
+    (repo, branch, key) = getRepoBranchAndKey()
     result = []
 
     try:
-        allItems = repo.get_contents(f"{entityType}/data.json", ref=branch)
+        allItems = decryptFile(
+            repo.get_contents(f"{entityType}/data.json", ref=branch),
+            f"{entityType}/data.json",
+            key,
+        )
     except:
         allItems = None
     if allItems:
@@ -74,26 +126,32 @@ def findByAttribute(attributeValue, attributeName, entityType):
 
 
 def insert(entity, entityType, filterKeys, attributeNames):
-    (repo, branch) = getRepoAndBranch()
+    (repo, branch, key) = getRepoBranchAndKey()
     result = None
     item = {}
-    print(filterKeys)
+
     for attribute in filterKeys:
         item[attribute] = entity.get(attribute)
 
     try:
-        file = repo.get_contents(f"{entityType}/data.json", ref=branch)
+        file = decryptFile(
+            repo.get_contents(f"{entityType}/data.json", ref=branch),
+            f"{entityType}/data.json",
+            key,
+        )
     except:
         file = None
     if file is None:
         result = newId()
         item["id"] = result
+        print("In githubrepo#92")
+        print(item)
         content = []
         content.append(item)
         repo.create_file(
             f"{entityType}/data.json",
             f"First instance in {entityType} collection",
-            json.dumps(content),
+            encrypt(json.dumps(content), key),
             branch=branch,
         )
         nonFilterKeyAttributes = [
@@ -104,7 +162,7 @@ def insert(entity, entityType, filterKeys, attributeNames):
         repo.create_file(
             f"{entityType}/{result}/data.json",
             f"Created a new {entityType} entry with id {result}",
-            json.dumps(item),
+            encrypt(json.dumps(item), key),
             branch=branch,
         )
     else:
@@ -115,11 +173,13 @@ def insert(entity, entityType, filterKeys, attributeNames):
         else:
             result = newId()
             item["id"] = result
+            print("In githubrepo#121")
+            print(item)
             content.append(item)
             repo.update_file(
                 f"{entityType}/data.json",
                 f"Updated {result} in {entityType} collection",
-                json.dumps(content),
+                encrypt(json.dumps(content), key),
                 file.sha,
                 branch=branch,
             )
@@ -128,7 +188,7 @@ def insert(entity, entityType, filterKeys, attributeNames):
             repo.create_file(
                 f"{entityType}/{result}/data.json",
                 f"Created a new entry {result} in {entityType} collection",
-                json.dumps(item),
+                encrypt(json.dumps(item), key),
                 branch=branch,
             )
     return result
@@ -146,15 +206,21 @@ def _attributesMatch(item, target, attributeNames):
 
 
 def update(entity, entityType, filterKeys, attributeNames):
-    (repo, branch) = getRepoAndBranch()
+    (repo, branch, key) = getRepoBranchAndKey()
 
     id = entity.get("id")
     item = {}
+    item["id"] = id
+    print(entity)
     for attribute in filterKeys:
         item[attribute] = entity.get(attribute)
-
+    print(item)
     try:
-        data = repo.get_contents(f"{entityType}/data.json", ref=branch)
+        data = decryptFile(
+            repo.get_contents(f"{entityType}/data.json", ref=branch),
+            f"{entityType}/data.json",
+            key,
+        )
     except:
         data = None
     if data:
@@ -166,12 +232,16 @@ def update(entity, entityType, filterKeys, attributeNames):
             repo.update_file(
                 f"{entityType}/data.json",
                 f"Updated {id} in {entityType}/data.json",
-                json.dumps(remaining),
+                encrypt(json.dumps(remaining), key),
                 data.sha,
                 branch=branch,
             )
     try:
-        oldItem = repo.get_contents(f"{entityType}/{id}/data.json", ref=branch)
+        oldItem = decryptFile(
+            repo.get_contents(f"{entityType}/{id}/data.json", ref=branch),
+            f"{entityType}/{id}/data.json",
+            key,
+        )
     except:
         oldItem = None
     if oldItem:
@@ -183,7 +253,7 @@ def update(entity, entityType, filterKeys, attributeNames):
         repo.update_file(
             f"{entityType}/{id}/data.json",
             f"Updated {entityType}/{id}/data.json",
-            json.dumps(item),
+            encrypt(json.dumps(item), key),
             oldItem.sha,
             branch=branch,
         )
@@ -194,11 +264,15 @@ def update(entity, entityType, filterKeys, attributeNames):
 
 
 def delete(id, entityType):
-    (repo, branch) = getRepoAndBranch()
+    (repo, branch, key) = getRepoBranchAndKey()
     result = False
 
     try:
-        data = repo.get_contents(f"{entityType}/data.json", ref=branch)
+        data = decryptFile(
+            repo.get_contents(f"{entityType}/data.json", ref=branch),
+            f"{entityType}/data.json",
+            key,
+        )
     except:
         data = None
     if data:
@@ -207,19 +281,23 @@ def delete(id, entityType):
         repo.update_file(
             f"{entityType}/data.json",
             "Deleted {id} from {entityType}/data.json",
-            json.dumps(existing),
+            encrypt(json.dumps(existing), key),
             data.sha,
             branch=branch,
         )
     try:
-        item = repo.get_contents(f"{entityType}/{id}/data.json", ref=branch)
+        item = decryptFile(
+            repo.get_contents(f"{entityType}/{id}/data.json", ref=branch),
+            f"{entityType}/{id}/data.json",
+            key,
+        )
     except:
         item = None
     if item:
         repo.delete_file(
             f"{entityType}/{id}/data.json",
-            f"Deleted {entityType}/{id}",
-            client.sha,
+            f"Deleted {entityType}/{id}/data.json",
+            item.sha,
             branch=branch,
         )
         result = True
@@ -228,11 +306,15 @@ def delete(id, entityType):
 
 
 def list(entityType):
-    (repo, branch) = getRepoAndBranch()
+    (repo, branch, key) = getRepoBranchAndKey()
     result = []
 
     try:
-        data = repo.get_contents(f"{entityType}/data.json", ref=branch)
+        data = decryptFile(
+            repo.get_contents(f"{entityType}/data.json", ref=branch),
+            f"{entityType}/data.json",
+            key,
+        )
     except:
         data = None
     if data:

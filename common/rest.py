@@ -82,7 +82,7 @@ def create(
     return response
 
 
-def update(event, context, retrieveAttributes, entityType, filterKey, attributeNames):
+def update(event, context, retrieveAttributes, entityType, filterKeys, attributeNames):
 
     status = 200
 
@@ -94,10 +94,10 @@ def update(event, context, retrieveAttributes, entityType, filterKey, attributeN
     else:
         id = params.retrieveId(body, event)
         attributes = retrieveAttributes(body, event)
-
+        attributes["id"] = id
         item = githubrepo.findById(id, entityType)
         if item:
-            githubrepo.update(item, entityType, filterKey, attributeNames)
+            githubrepo.update(attributes, entityType, filterKeys, attributeNames)
             status = 200
             respBody = {"id": item["id"]}
             respBody.update(item)

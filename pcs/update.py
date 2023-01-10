@@ -12,7 +12,7 @@ def handler(event, context):
         event,
         context,
         common.retrieveAttributes,
-        "incidents",
+        "pcs",
         common.retrieveFilterKeys(),
         common.retrieveAttributeNames(),
     )
