@@ -4,62 +4,36 @@ import githubrepo
 
 
 def findById(id):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
-    incident = None
-    try:
-        file = repo.get_contents(f"incidents/{id}/data.json", ref=branch)
-    except:
-        file = None
-    if file:
-        incident = json.loads(file.decoded_content.decode())
-    return incident
+    return githubrepo.findById(id, "incidents")
 
 
 def insert(licenseId, email, product, productVersion, installationCode):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
-    result = githubrepo.newId()
-
     item = {}
-    item["id"] = result
-    item["licenseId"] = licenseId
     item["email"] = email
     item["product"] = product
     item["productVersion"] = productVersion
     item["installationCode"] = installationCode
+    return githubrepo.insert(
+        item,
+        "incidents",
+        ["licenseId", "email"],
+        ["licenseId", "email", "product", "productVersion", "installationCode"],
+    )
 
-    try:
-        file = repo.get_contents("incidents/data.json", ref=branch)
-    except:
-        file = None
-    if file is None:
-        content = []
-        content.append(item)
-        repo.create_file(
-            "incidents/data.json", "First incident", json.dumps(content), branch=branch
-        )
-        repo.create_file(
-            f"incidents/{result}/data.json",
-            f"Created {result} incident",
-            json.dumps(item),
-            branch=branch,
-        )
-    else:
-        content = json.loads(file.decoded_content.decode())
-        content.append(item)
-        repo.update_file(
-            "incidents/data.json",
-            "acmsl-licdata",
-            json.dumps(content),
-            file.sha,
-            branch=branch,
-        )
-        repo.create_file(
-            f"incidents/{result}/data.json",
-            f"Created {result} incident",
-            json.dumps(item),
-            branch=branch,
-        )
 
-    return result
+def update(id, licenseId, email, product, productVersion, installationCode):
+    item = {}
+    item["email"] = email
+    item["product"] = product
+    item["productVersion"] = productVersion
+    item["installationCode"] = installationCode
+    return githubrepo.update(
+        item,
+        "incidents",
+        ["licenseId", "email"],
+        ["licenseId", "email", "product", "productVersion", "installationCode"],
+    )
+
+
+def delete(id):
+    return githubrepo.delete(id, "incidents")

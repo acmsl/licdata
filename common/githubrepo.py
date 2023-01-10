@@ -15,13 +15,16 @@ def getBranch():
     return os.environ["GITHUB_BRANCH"]
 
 
+def getRepoAndBranch():
+    return (getRepo(), getBranch())
+
+
 def newId():
     return str(uuid4())
 
 
 def findById(id, entityType):
-    repo = getRepo()
-    branch = getBranch()
+    (repo, branch) = getRepoAndBranch()
     item = None
     try:
         file = repo.get_contents(f"{entityType}/{id}/data.json", ref=branch)
@@ -32,31 +35,49 @@ def findById(id, entityType):
     return item
 
 
-def findByAttribute(attributeValue, attributeName, entityType):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
-    result = None
+def findAllByAttributes(filter, entityType):
+    (repo, branch) = getRepoAndBranch()
+    result = []
 
     try:
         allItems = repo.get_contents(f"{entityType}/data.json", ref=branch)
     except:
         allItems = None
-    if allClients:
+    if allItems:
         allItemsContent = json.loads(allItems.decoded_content.decode())
-        items = [x for x in allItemsContent if x.get(attributeName) == attributeValue]
-        if items:
-            result = items[0]
-        else:
-            print(f"No {entityType} with {attributeName} {attributeValue}")
+        item = {}
+        for key in filter:
+            item[key] = filter.get(key)
+        result = [
+            x for x in allItemsContent if _attributesMatch(x, item, filter.keys())
+        ]
+
+    return result
+
+
+def findAllByAttribute(attributeValue, attributeName, entityType):
+    filter = {}
+    filter[attributeName] = attributeValue
+    return findAllByAttributes(filter, entityType)
+
+
+def findByAttribute(attributeValue, attributeName, entityType):
+    items = findAllByAttribute(attributeValue, attributeName, entityType)
+    result = None
+
+    if items:
+        result = items[0]
+    else:
+        print(f"No {entityType} with {attributeName} {attributeValue}")
 
     return result
 
 
 def insert(entity, entityType, filterKeys, attributeNames):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
+    (repo, branch) = getRepoAndBranch()
     result = None
     item = {}
+    print(filterKeys)
     for attribute in filterKeys:
         item[attribute] = entity.get(attribute)
 
@@ -65,7 +86,7 @@ def insert(entity, entityType, filterKeys, attributeNames):
     except:
         file = None
     if file is None:
-        result = githubrepo.newId()
+        result = newId()
         item["id"] = result
         content = []
         content.append(item)
@@ -92,7 +113,7 @@ def insert(entity, entityType, filterKeys, attributeNames):
         if entries:
             result = entries[0]["id"]
         else:
-            result = githubrepo.newId()
+            result = newId()
             item["id"] = result
             content.append(item)
             repo.update_file(
@@ -125,8 +146,7 @@ def _attributesMatch(item, target, attributeNames):
 
 
 def update(entity, entityType, filterKeys, attributeNames):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
+    (repo, branch) = getRepoAndBranch()
 
     id = entity.get("id")
     item = {}
@@ -174,8 +194,7 @@ def update(entity, entityType, filterKeys, attributeNames):
 
 
 def delete(id, entityType):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
+    (repo, branch) = getRepoAndBranch()
     result = False
 
     try:
@@ -204,5 +223,19 @@ def delete(id, entityType):
             branch=branch,
         )
         result = True
+
+    return result
+
+
+def list(entityType):
+    (repo, branch) = getRepoAndBranch()
+    result = []
+
+    try:
+        data = repo.get_contents(f"{entityType}/data.json", ref=branch)
+    except:
+        data = None
+    if data:
+        result = json.loads(data.decoded_content.decode())
 
     return result

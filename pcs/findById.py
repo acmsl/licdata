@@ -6,4 +6,4 @@ import rest
 
 def handler(event, context):
 
-    return rest.findById(event, context, "clients")
+    return rest.findById(event, context, "pcs")

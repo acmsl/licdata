@@ -14,7 +14,7 @@ def handler(event, context):
         common.retrievePk,
         common.retrieveAttributes,
         common.findByPk,
-        "clients",
+        "prelicenses",
         common.retrieveFilterKeys(),
         common.retrieveAttributeNames(),
     )

@@ -4,6 +4,7 @@ sys.path.insert(0, "common")
 
 import common
 import rest
+import params
 
 
 def handler(event, context):
@@ -13,8 +14,8 @@ def handler(event, context):
         context,
         common.retrievePk,
         common.retrieveAttributes,
-        common.findByPk,
-        "clients",
+        findByPk,
+        "pcs",
         common.retrieveFilterKeys(),
         common.retrieveAttributeNames(),
     )

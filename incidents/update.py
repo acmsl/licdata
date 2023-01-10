@@ -8,13 +8,11 @@ import rest
 
 def handler(event, context):
 
-    return rest.create(
+    return rest.update(
         event,
         context,
-        common.retrievePk,
         common.retrieveAttributes,
-        common.findByPk,
-        "clients",
-        common.retrieveFilterKeys(),
-        common.retrieveAttributeNames(),
+        "incidents",
+        common.retrieveFilterKeys,
+        common.retrieveAttributeNames,
     )

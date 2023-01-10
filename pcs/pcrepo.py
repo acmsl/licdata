@@ -1,146 +1,77 @@
-import json
-
-from githubrepo import githubrepo
+import githubrepo
 
 
 def findById(id):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
-    pc = None
-    try:
-        file = repo.get_contents(f"pcs/{id}/data.json", ref=branch)
-    except:
-        file = None
-    if file:
-        pc = json.loads(file.decoded_content.decode())
-    return pc
+    return githubrepo.findById(id, "pcs")
 
 
-def insert(licenses, installationCode, pcDescription):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
-    result = githubrepo.newId()
-
-    item = {}
-    item["id"] = result
-    item["installationCode"] = installationCode
-
-    try:
-        file = repo.get_contents("pcs/data.json", ref=branch)
-    except:
-        file = None
-    if file is None:
-        content = []
-        content.append(item)
-        repo.create_file(
-            "pcs/data.json", "First PC", json.dumps(content), branch=branch
-        )
-        item["licenses"] = licenses
-        item["description"] = pcDescription
-        repo.create_file(
-            f"pcs/{result}/data.json",
-            f"Created {result} pc",
-            json.dumps(item),
-            branch=branch,
-        )
+def findByLicenseIdAndInstallationCode(licenseId, installationCode):
+    result = []
+    filter = {}
+    filter["installationCode"] = installationCode
+    pcs = githubrepo.findAllByAttribute(installationCode, "installationCode", "pcs")
+    if pcs:
+        for pc in pcs:
+            if pc and licenseId in pc.get("licenses"):
+                result.append(pc)
+            else:
+                print(f"No pc found for license {licenseId}")
     else:
-        content = json.loads(file.decoded_content.decode())
-        el = [x for x in content if x["installationCode"] == installationCode]
-        if el:
-            result = el[0]["id"]
-        else:
-            content.append(item)
-            repo.update_file(
-                "pcs/data.json",
-                "acmsl-licdata",
-                json.dumps(content),
-                file.sha,
-                branch=branch,
-            )
-            item["licenses"] = licenses
-            item["description"] = pcDescription
-            repo.create_file(
-                f"pcs/{result}/data.json",
-                f"Created {result} pc",
-                json.dumps(item),
-                branch=branch,
-            )
+        print("No pcs found")
 
     return result
 
 
-def addLicense(pcId, licenseId):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
-    try:
-        file = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
-    except:
-        file = None
-    if file:
-        content = json.loads(file.decoded_content.decode())
-        content["licenses"].append(licenseId)
-        repo.update_file(
-            f"pcs/{pcId}/data.json",
-            "acmsl-licdata",
-            json.dumps(content),
-            file.sha,
-            branch=branch,
-        )
+def findByInstallationCode(installationCode):
+    return githubrepo.findByAttribute(installationCode, "installationCode", "pcs")
+
+
+def addLicense(id, licenseId):
+    result = None
+    pc = findById(id)
+    if pc:
+        licenses = pc.get("licenses", [])
+        if not licenseId in licenses:
+            licenses.append(licenseId)
+            pc["licenses"] = licenses
+            result = update(
+                pc,
+                "pcs",
+                ["installationCode"],
+                ["licenses", "installationCode", "description"],
+            )
     else:
         print(f"Cannot add license to non-existing pc {pcId}")
 
-
-def filterByInstallationCode(items, installationCode, repo, branch):
-    for pc in items:
-        pcId = pc["id"]
-        try:
-            file = repo.get_contents(f"pcs/{pcId}/data.json", ref=branch)
-        except:
-            file = None
-        if file:
-            content = json.loads(file.decoded_content.decode())
-            if content["installationCode"] == installationCode:
-                return content
-        else:
-            print(f"No pc file found at pcs/{pcId}/data.json")
-
-    return None
+    return result
 
 
-def findByLicenseIdAndInstallationCode(licenseId, installationCode):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
-    try:
-        allPcs = repo.get_contents("pcs/data.json", ref=branch)
-    except:
-        allPcs = None
-    if allPcs:
-        pcs = json.loads(allPcs.decoded_content.decode())
-        pc = filterByInstallationCode(pcs, installationCode, repo, branch)
-        if pc and licenseId in pc["licenses"]:
-            return pc
-        else:
-            print(f"No pc found for license {licenseId}")
-    else:
-        print("No pcs found")
-
-    return None
+def insert(licenses, installationCode, pcDescription):
+    item = {}
+    item["installationCode"] = installationCode
+    item["licenses"] = licenses
+    item["description"] = pcDescription
+    return githubrepo.insert(
+        item,
+        "pcs",
+        ["installationCode"],
+        ["licenses", "installationCode", "description"],
+    )
 
 
-def findByInstallationCode(installationCode):
-    repo = githubrepo.getRepo()
-    branch = githubrepo.getBranch()
-    try:
-        allPcs = repo.get_contents("pcs/data.json", ref=branch)
-    except:
-        allPcs = None
-    if allPcs:
-        allPcsContent = json.loads(allPcs.decoded_content.decode())
-        if allPcsContent:
-            return filterByInstallationCode(
-                allPcsContent, installationCode, repo, branch
-            )
-    else:
-        print(f"No pcs found")
+def update(id, licenses, installationCode, pcDescription):
+    item = {}
+    item["id"] = id
+    item["installationCode"] = installationCode
+    item["licenses"] = licenses
+    item["description"] = pcDescription
+    return githubrepo.update(
+        item,
+        "pcs",
+        ["installationCode"],
+        ["licenses", "installationCode", "description"],
+    )
 
-    return None
+
+def delete(id):
+    return githubrepo.delete(id, "pcs")
