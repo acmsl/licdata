@@ -26,7 +26,7 @@ def findById(event, context, entityType):
     else:
         id = params.retrieveId(body, event)
 
-        item = githubrepo.findById(id, entityType)
+        (item, sha) = githubrepo.findById(id, entityType)
         if item:
             status = 200
             respBody = item
@@ -61,7 +61,7 @@ def create(
         pk = retrievePk(body, event)
         attributes = retrieveAttributes(body, event)
 
-        item = findByPk(pk)
+        (item, sha) = findByPk(pk)
         if item:
             status = 409
             respBody = {"id": item["id"]}
@@ -95,12 +95,12 @@ def update(event, context, retrieveAttributes, entityType, filterKeys, attribute
         id = params.retrieveId(body, event)
         attributes = retrieveAttributes(body, event)
         attributes["id"] = id
-        item = githubrepo.findById(id, entityType)
+        (item, sha) = githubrepo.findById(id, entityType)
         if item:
+
             githubrepo.update(attributes, entityType, filterKeys, attributeNames)
             status = 200
-            respBody = {"id": item["id"]}
-            respBody.update(item)
+            respBody = attributes
             response = resp.buildResponse(status, respBody, event, context)
         else:
             status = 404
@@ -122,7 +122,7 @@ def delete(event, context, entityType):
     else:
         id = params.retrieveId(body, event)
 
-        item = githubrepo.findById(id, entityType)
+        (item, sha) = githubrepo.findById(id, entityType)
         if item:
             githubrepo.delete(id, entityType)
             status = 200
@@ -146,7 +146,7 @@ def list(event, context, entityType):
         respBody = {"error": "Cannot parse body"}
         response = resp.buildResponse(status, respBody, event, context)
     else:
-        items = githubrepo.list(entityType)
+        (items, sha) = githubrepo.list(entityType)
         if items:
             status = 200
             respBody = {}

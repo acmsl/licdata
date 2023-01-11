@@ -7,12 +7,15 @@ def getContents(path):
 
     (repo, branch) = githubaccess.getRepoAndBranch()
 
-    try:
-        result = crypt.decryptFile(repo.get_contents(path, ref=branch), path)
-    except:
-        result = None
+    file = repo.get_contents(path, ref=branch)
 
-    return result
+    try:
+        result = crypt.decryptFile(file, path)
+    except Exception as e:
+        result = None
+        print(f"Cannot decrypt {path}: {e}")
+
+    return (result, file.sha)
 
 
 def createFile(path, content, message):
@@ -27,13 +30,14 @@ def createFile(path, content, message):
             crypt.encrypt(content),
             branch=branch,
         )
-    except:
+    except Exception as e:
         result = None
+        print(f"Error creating file {path}: {e}")
 
     return result
 
 
-def updateFile(path, content, hash, message):
+def updateFile(path, content, message, hash):
     result = None
 
     (repo, branch) = githubaccess.getRepoAndBranch()
@@ -46,25 +50,29 @@ def updateFile(path, content, hash, message):
             hash,
             branch=branch,
         )
-    except:
+    except Exception as e:
         result = None
+        print(f"Error updating file {path}: {e}")
 
     return result
 
 
-def deleteFile(path, hash, message):
+def deleteFile(path, message):
     result = None
 
     (repo, branch) = githubaccess.getRepoAndBranch()
 
     try:
+        (result, hash) = getContents(path)
+
         result = repo.delete_file(
             path,
             message,
             hash,
             branch=branch,
         )
-    except:
+    except Exception as e:
         result = None
+        print(f"Error deleting file {path}: {e}")
 
     return result

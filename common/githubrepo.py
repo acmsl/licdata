@@ -1,6 +1,4 @@
 from uuid import uuid4
-import os
-from github import Github
 import json
 import githubraw
 
@@ -11,26 +9,33 @@ def newId():
 
 def findById(id, entityType):
     item = None
+
+    data = None
+
+    sha = None
+
     try:
-        file = githubraw.getContents(f"{entityType}/{id}/data.json")
+        (data, sha) = githubraw.getContents(f"{entityType}/{id}/data.json")
     except:
-        file = None
+        data = None
 
-    if file:
-        item = json.loads(file.decoded_content.decode())
+    if data:
+        item = json.loads(data)
 
-    return item
+    return (item, sha)
 
 
 def findAllByAttributes(filter, entityType):
     result = []
 
+    sha = None
+
     try:
-        allItems = githubraw.getContents(f"{entityType}/data.json")
+        (allItems, sha) = githubraw.getContents(f"{entityType}/data.json")
     except:
         allItems = None
     if allItems:
-        allItemsContent = json.loads(allItems.decoded_content.decode())
+        allItemsContent = json.loads(allItems)
         item = {}
         for key in filter:
             item[key] = filter.get(key)
@@ -38,7 +43,7 @@ def findAllByAttributes(filter, entityType):
             x for x in allItemsContent if _attributesMatch(x, item, filter.keys())
         ]
 
-    return result
+    return (result, sha)
 
 
 def findAllByAttribute(attributeValue, attributeName, entityType):
@@ -48,7 +53,7 @@ def findAllByAttribute(attributeValue, attributeName, entityType):
 
 
 def findByAttribute(attributeValue, attributeName, entityType):
-    items = findAllByAttribute(attributeValue, attributeName, entityType)
+    (items, sha) = findAllByAttribute(attributeValue, attributeName, entityType)
     result = None
 
     if items:
@@ -56,21 +61,23 @@ def findByAttribute(attributeValue, attributeName, entityType):
     else:
         print(f"No {entityType} with {attributeName} {attributeValue}")
 
-    return result
+    return (result, sha)
 
 
 def insert(entity, entityType, filterKeys, attributeNames):
     result = None
     item = {}
+    data = None
+    sha = None
 
     for attribute in filterKeys:
         item[attribute] = entity.get(attribute)
 
     try:
-        file = githubraw.getContents(f"{entityType}/data.json")
+        (data, sha) = githubraw.getContents(f"{entityType}/data.json")
     except:
-        file = None
-    if file is None:
+        data = None
+    if data is None:
         result = newId()
         item["id"] = result
         content = []
@@ -91,7 +98,7 @@ def insert(entity, entityType, filterKeys, attributeNames):
             f"Created a new {entityType} entry with id {result}",
         )
     else:
-        content = json.loads(file.decoded_content.decode())
+        content = json.loads(data)
         entries = [x for x in content if _attributesMatch(x, entity, filterKeys)]
         if entries:
             result = entries[0]["id"]
@@ -103,7 +110,7 @@ def insert(entity, entityType, filterKeys, attributeNames):
                 f"{entityType}/data.json",
                 json.dumps(content),
                 f"Updated {result} in {entityType} collection",
-                file.sha,
+                sha,
             )
             for attribute in attributeNames:
                 item[attribute] = entity.get(attribute)
@@ -127,7 +134,6 @@ def _attributesMatch(item, target, attributeNames):
 
 
 def update(entity, entityType, filterKeys, attributeNames):
-    (repo, branch, key) = getRepoBranchAndKey()
 
     id = entity.get("id")
     item = {}
@@ -137,11 +143,11 @@ def update(entity, entityType, filterKeys, attributeNames):
         item[attribute] = entity.get(attribute)
     print(item)
     try:
-        data = githubraw.getContents(f"{entityType}/data.json")
+        (data, sha) = githubraw.getContents(f"{entityType}/data.json")
     except:
         data = None
     if data:
-        content = json.loads(data.decoded_content.decode())
+        content = json.loads(data)
         existing = [x for x in content if x.get("id") == id]
         if existing and not _attributesMatch(existing[0], entity, attributeNames):
             remaining = [x for x in content if x.get("id") != id]
@@ -150,10 +156,10 @@ def update(entity, entityType, filterKeys, attributeNames):
                 f"{entityType}/data.json",
                 json.dumps(remaining),
                 f"Updated {id} in {entityType}/data.json",
-                data.sha,
+                sha,
             )
     try:
-        oldItem = githubraw.getContents(f"{entityType}/{id}/data.json")
+        (oldItem, oldSha) = githubraw.getContents(f"{entityType}/{id}/data.json")
     except:
         oldItem = None
     if oldItem:
@@ -166,7 +172,7 @@ def update(entity, entityType, filterKeys, attributeNames):
             f"{entityType}/{id}/data.json",
             json.dumps(item),
             f"Updated {entityType}/{id}/data.json",
-            oldItem.sha,
+            oldSha,
         )
     else:
         print(f"{entityType}/{id}/data.json not found")
@@ -175,31 +181,24 @@ def update(entity, entityType, filterKeys, attributeNames):
 
 
 def delete(id, entityType):
-    (repo, branch, key) = getRepoBranchAndKey()
     result = False
 
     try:
-        data = githubraw.getContents(f"{entityType}/data.json")
+        (data, sha) = githubraw.getContents(f"{entityType}/data.json")
     except:
         data = None
     if data:
-        content = json.loads(data.decoded_content.decode())
+        content = json.loads(data)
         existing = [x for x in content if x.get("id") != id]
         githubraw.updateFile(
             f"{entityType}/data.json",
             json.dumps(existing),
-            "Deleted {id} from {entityType}/data.json",
-            data.sha,
+            f"Deleted {id} from {entityType}/data.json",
+            sha,
         )
-    try:
-        item = githubraw.getContents(f"{entityType}/{id}/data.json")
-    except:
-        item = None
-    if item:
+
         githubraw.deleteFile(
-            f"{entityType}/{id}/data.json",
-            f"Deleted {entityType}/{id}/data.json",
-            item.sha,
+            f"{entityType}/{id}/data.json", f"Deleted {entityType}/{id}/data.json"
         )
         result = True
 
@@ -207,14 +206,15 @@ def delete(id, entityType):
 
 
 def list(entityType):
-    (repo, branch, key) = getRepoBranchAndKey()
     result = []
+    sha = None
 
     try:
-        data = githubraw.getContents(f"{entityType}/data.json")
+        (data, sha) = githubraw.getContents(f"{entityType}/data.json")
+        print(f"{entityType}/data.json -> {data}")
     except:
         data = None
     if data:
-        result = json.loads(data.decoded_content.decode())
+        result = json.loads(data)
 
-    return result
+    return (result, sha)

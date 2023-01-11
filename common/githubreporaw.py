@@ -1,79 +1,17 @@
 from uuid import uuid4
-import os
-from github import Github
 import json
-
-
-def getRepo():
-    token = os.environ["GITHUB_TOKEN"]
-    github = Github(token)
-    repository = os.environ["GITHUB_REPO"]
-    return github.get_repo(repository)
-
-
-def getBranch():
-    return os.environ["GITHUB_BRANCH"]
-
-
-def getKey():
-    return os.environ["KEY"]
-
-
-def getRepoBranchAndKey():
-    return (getRepo(), getBranch(), getKey())
+import githubraw
 
 
 def newId():
     return str(uuid4())
 
 
-def encrypt(content, key):
-    result = None
-    fernet = Fernet(key)
-
-    try:
-        result = fernet.encrypt(content.encode())
-    except:
-        print(f"{content} could not be encrypted")
-
-    return result
-
-
-def decrypt(content, key):
-    result = None
-    fernet = Fernet(key)
-
-    try:
-        result = fernet.decrypt(content).decode()
-    except:
-        print(f"{content} could not be decrypted")
-
-    return result
-
-
-def decryptFile(file, filePath, key):
-    result = None
-    fernet = Fernet(key)
-
-    decFile = decrypt(file.decoded_content.decode(), key)
-
-    if decFile:
-        result = json.loads(decFile.decode())
-    else:
-        print(f"{filePath} could not be decrypted")
-
-    return result
-
-
 def findById(id, entityType):
-    (repo, branch, key) = getRepoBranchAndKey()
     item = None
     try:
-        file = decryptFile(
-            repo.get_contents(f"{entityType}/{id}/data.json", ref=branch),
-            f"{entityType}/{id}/data.json",
-            key,
-        )
+        file = githubraw.getContents(f"{entityType}/{id}/data.json", repo, branch, key)
+
     except:
         file = None
 
@@ -84,14 +22,11 @@ def findById(id, entityType):
 
 
 def findAllByAttributes(filter, entityType):
-    (repo, branch, key) = getRepoBranchAndKey()
     result = []
 
     try:
-        allItems = decryptFile(
-            repo.get_contents(f"{entityType}/data.json", ref=branch),
-            f"{entityType}/data.json",
-            key,
+        allItems = (
+            githubraw.getContents(f"{entityType}/data.json", repo, branch, key),
         )
     except:
         allItems = None
@@ -126,7 +61,6 @@ def findByAttribute(attributeValue, attributeName, entityType):
 
 
 def insert(entity, entityType, filterKeys, attributeNames):
-    (repo, branch, key) = getRepoBranchAndKey()
     result = None
     item = {}
 
@@ -134,25 +68,19 @@ def insert(entity, entityType, filterKeys, attributeNames):
         item[attribute] = entity.get(attribute)
 
     try:
-        file = decryptFile(
-            repo.get_contents(f"{entityType}/data.json", ref=branch),
-            f"{entityType}/data.json",
-            key,
-        )
+        file = githubraw.getContents(f"{entityType}/data.json", repo, branch, key)
     except:
         file = None
     if file is None:
         result = newId()
         item["id"] = result
-        print("In githubrepo#92")
         print(item)
         content = []
         content.append(item)
-        repo.create_file(
+        githubraw.createFile(
             f"{entityType}/data.json",
+            json.dumps(content),
             f"First instance in {entityType} collection",
-            encrypt(json.dumps(content), key),
-            branch=branch,
         )
         nonFilterKeyAttributes = [
             attr for attr in attributeNames if attr not in filterKeys
@@ -206,7 +134,6 @@ def _attributesMatch(item, target, attributeNames):
 
 
 def update(entity, entityType, filterKeys, attributeNames):
-    (repo, branch, key) = getRepoBranchAndKey()
 
     id = entity.get("id")
     item = {}
@@ -216,11 +143,7 @@ def update(entity, entityType, filterKeys, attributeNames):
         item[attribute] = entity.get(attribute)
     print(item)
     try:
-        data = decryptFile(
-            repo.get_contents(f"{entityType}/data.json", ref=branch),
-            f"{entityType}/data.json",
-            key,
-        )
+        data = githubraw.getContents(f"{entityType}/data.json", repo, branch, key)
     except:
         data = None
     if data:
@@ -237,10 +160,8 @@ def update(entity, entityType, filterKeys, attributeNames):
                 branch=branch,
             )
     try:
-        oldItem = decryptFile(
-            repo.get_contents(f"{entityType}/{id}/data.json", ref=branch),
-            f"{entityType}/{id}/data.json",
-            key,
+        oldItem = githubraw.getContents(
+            f"{entityType}/{id}/data.json", repo, branch, key
         )
     except:
         oldItem = None
@@ -264,15 +185,10 @@ def update(entity, entityType, filterKeys, attributeNames):
 
 
 def delete(id, entityType):
-    (repo, branch, key) = getRepoBranchAndKey()
     result = False
 
     try:
-        data = decryptFile(
-            repo.get_contents(f"{entityType}/data.json", ref=branch),
-            f"{entityType}/data.json",
-            key,
-        )
+        data = githubraw.getContents(f"{entityType}/data.json", repo, branch, key)
     except:
         data = None
     if data:
@@ -286,11 +202,7 @@ def delete(id, entityType):
             branch=branch,
         )
     try:
-        item = decryptFile(
-            repo.get_contents(f"{entityType}/{id}/data.json", ref=branch),
-            f"{entityType}/{id}/data.json",
-            key,
-        )
+        item = githubraw.getContents(f"{entityType}/{id}/data.json", repo, branch, key)
     except:
         item = None
     if item:
@@ -306,15 +218,10 @@ def delete(id, entityType):
 
 
 def list(entityType):
-    (repo, branch, key) = getRepoBranchAndKey()
     result = []
 
     try:
-        data = decryptFile(
-            repo.get_contents(f"{entityType}/data.json", ref=branch),
-            f"{entityType}/data.json",
-            key,
-        )
+        data = githubraw.getContents(f"{entityType}/data.json", repo, branch, key)
     except:
         data = None
     if data:
