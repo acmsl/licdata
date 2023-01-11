@@ -1,2 +1,1 @@
 serverless.yml filter=git-crypt diff=git-crypt
-sample-enc.txt filter=git-crypt diff=git-crypt
