@@ -1,39 +1,18 @@
-import json
+import sys
+sys.path.insert(0, "common")
 
-import githubrepo
-
-
-def findById(id):
-    return githubrepo.findById(id, "incidents")
+from repo import Repo
 
 
-def insert(licenseId, email, product, productVersion, installationCode):
-    item = {}
-    item["email"] = email
-    item["product"] = product
-    item["productVersion"] = productVersion
-    item["installationCode"] = installationCode
-    return githubrepo.insert(
-        item,
-        "incidents",
-        ["licenseId", "email"],
-        ["licenseId", "email", "product", "productVersion", "installationCode"],
-    )
-
-
-def update(id, licenseId, email, product, productVersion, installationCode):
-    item = {}
-    item["email"] = email
-    item["product"] = product
-    item["productVersion"] = productVersion
-    item["installationCode"] = installationCode
-    return githubrepo.update(
-        item,
-        "incidents",
-        ["licenseId", "email"],
-        ["licenseId", "email", "product", "productVersion", "installationCode"],
-    )
-
-
-def delete(id):
-    return githubrepo.delete(id, "incidents")
+class IncidentRepo(Repo):
+    """
+    A subclass of Repo that uses the /incidents subtree.
+    """
+    def __init__(self):
+        """Creates a new IncidentRepo instance"""
+        super().__init__(
+            "incidents",
+            [""],
+            ["email"],
+            ["product", "productVersion", "installationCode"],
+        )

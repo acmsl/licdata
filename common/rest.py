@@ -15,7 +15,7 @@ def retrieveAttributesFromParams(body, event, attributeNames):
     return result
 
 
-def findById(event, context, entityType):
+def findById(event, context, repo):
     status = 200
 
     (body, error) = params.loadBody(event)
@@ -26,7 +26,7 @@ def findById(event, context, entityType):
     else:
         id = params.retrieveId(body, event)
 
-        (item, sha) = githubrepo.findById(id, entityType)
+        (item, sha) = repo.findById(id)
         if item:
             status = 200
             respBody = item
@@ -44,10 +44,7 @@ def create(
     context,
     retrievePk,
     retrieveAttributes,
-    findByPk,
-    entityType,
-    filterKeys,
-    attributeNames,
+    repo
 ):
 
     status = 200
@@ -61,14 +58,14 @@ def create(
         pk = retrievePk(body, event)
         attributes = retrieveAttributes(body, event)
 
-        (item, sha) = findByPk(pk)
+        (item, sha) = repo.findByPk(pk)
         if item:
             status = 409
             respBody = {"id": item["id"]}
             respBody.update(attributes)
             response = resp.buildResponse(status, respBody, event, context)
         else:
-            id = githubrepo.insert(attributes, entityType, filterKeys, attributeNames)
+            id = repo.insert(attributes)
             headers = event.get("headers", {})
             host = headers.get("host", event.get("host", ""))
             status = 201
@@ -76,13 +73,13 @@ def create(
             respBody.update(attributes)
             response = resp.buildResponse(status, respBody, event, context)
             response["headers"].update(
-                {"Location": f"https://{host}/{entityType}/{id}"}
+                {"Location": f"https://{host}/{repo.entityType}/{id}"}
             )
 
     return response
 
 
-def update(event, context, retrieveAttributes, entityType, filterKeys, attributeNames):
+def update(event, context, retrieveAttributes, repo):
 
     status = 200
 
@@ -95,10 +92,10 @@ def update(event, context, retrieveAttributes, entityType, filterKeys, attribute
         id = params.retrieveId(body, event)
         attributes = retrieveAttributes(body, event)
         attributes["id"] = id
-        (item, sha) = githubrepo.findById(id, entityType)
+        (item, sha) = repo.findById(id)
         if item:
 
-            githubrepo.update(attributes, entityType, filterKeys, attributeNames)
+            repo.update(attributes)
             status = 200
             respBody = attributes
             response = resp.buildResponse(status, respBody, event, context)
@@ -110,7 +107,7 @@ def update(event, context, retrieveAttributes, entityType, filterKeys, attribute
     return response
 
 
-def delete(event, context, entityType):
+def delete(event, context, repo):
 
     status = 200
 
@@ -122,9 +119,9 @@ def delete(event, context, entityType):
     else:
         id = params.retrieveId(body, event)
 
-        (item, sha) = githubrepo.findById(id, entityType)
+        (item, sha) = repo.findById(id)
         if item:
-            githubrepo.delete(id, entityType)
+            repo.delete(id)
             status = 200
             respBody = {"id": item["id"]}
             response = resp.buildResponse(status, respBody, event, context)
@@ -136,7 +133,7 @@ def delete(event, context, entityType):
     return response
 
 
-def list(event, context, entityType):
+def list(event, context, repo):
 
     status = 200
 
@@ -146,11 +143,10 @@ def list(event, context, entityType):
         respBody = {"error": "Cannot parse body"}
         response = resp.buildResponse(status, respBody, event, context)
     else:
-        (items, sha) = githubrepo.list(entityType)
+        (items, sha) = repo.list()
         if items:
             status = 200
-            respBody = {}
-            respBody[entityType] = items
+            respBody = items
             response = resp.buildResponse(status, respBody, event, context)
         else:
             status = 404

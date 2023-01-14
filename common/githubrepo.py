@@ -30,6 +30,8 @@ def findAllByAttributes(filter, entityType):
 
     sha = None
 
+    print(filter)
+
     try:
         (allItems, sha) = githubraw.getContents(f"{entityType}/data.json")
     except:
@@ -38,7 +40,7 @@ def findAllByAttributes(filter, entityType):
         allItemsContent = json.loads(allItems)
         item = {}
         for key in filter:
-            item[key] = filter.get(key)
+            item[key] = filter[key]
         result = [
             x for x in allItemsContent if _attributesMatch(x, item, filter.keys())
         ]
@@ -53,8 +55,9 @@ def findAllByAttribute(attributeValue, attributeName, entityType):
 
 
 def findByAttribute(attributeValue, attributeName, entityType):
-    (items, sha) = findAllByAttribute(attributeValue, attributeName, entityType)
     result = None
+
+    (items, sha) = findAllByAttribute(attributeValue, attributeName, entityType)
 
     if items:
         result = items[0]
@@ -63,6 +66,17 @@ def findByAttribute(attributeValue, attributeName, entityType):
 
     return (result, sha)
 
+def findByAttributes(filter, entityType):
+    result = None
+
+    (items, sha) = findAllByAttributes(filter, entityType)
+
+    if items:
+        result = items[0]
+    else:
+        print(f"No {entityType} found matching {filter}")
+
+    return (result, sha)
 
 def insert(entity, entityType, filterKeys, attributeNames):
     result = None

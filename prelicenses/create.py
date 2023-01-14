@@ -2,6 +2,7 @@ import sys
 
 sys.path.insert(0, "common")
 
+from prelicenserepo import PrelicenseRepo
 import common
 import rest
 
@@ -9,12 +10,5 @@ import rest
 def handler(event, context):
 
     return rest.create(
-        event,
-        context,
-        common.retrievePk,
-        common.retrieveAttributes,
-        common.findByPk,
-        "prelicenses",
-        common.retrieveFilterKeys(),
-        common.retrieveAttributeNames(),
+        event, context, common.retrievePk, common.retrieveAttributes, PrelicenseRepo()
     )

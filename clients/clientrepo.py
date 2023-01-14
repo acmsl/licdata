@@ -1,36 +1,18 @@
-import githubrepo
+import sys
+sys.path.insert(0, "common")
+
+from repo import Repo
 
 
-def findById(clientId):
-    return githubrepo.findById(clientId, "clients")
-
-
-def findByEmail(email):
-    return githubrepo.findByAttribute(email, "email", "clients")
-
-
-def insert(email, address, contact, phone):
-    item = {}
-    item["email"] = email
-    item["address"] = address
-    item["contact"] = contact
-    item["phone"] = phone
-    return githubrepo.insert(
-        item, "clients", ["email"], ["email", "address", "contact", "phone"]
-    )
-
-
-def update(id, email, address, contact, phone):
-    item = {}
-    item["id"] = id
-    item["email"] = email
-    item["address"] = address
-    item["contact"] = contact
-    item["phone"] = phone
-    return githubrepo.update(
-        item, "clients", ["email"], ["email", "address", "contact", "phone"]
-    )
-
-
-def delete(id):
-    return githubrepo.delete(id, "clients")
+class ClientRepo(Repo):
+    """
+    A subclass of Repo that uses the /clients subtree.
+    """
+    def __init__(self):
+        """Creates a new ClientRepo instance"""
+        super().__init__(
+            "clients",
+            ["email"],
+            ["email"],
+            ["email", "address", "contact", "phone"],
+        )

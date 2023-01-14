@@ -2,25 +2,14 @@ import sys
 
 sys.path.insert(0, "common")
 
+from incidentrepo import IncidentRepo
 import rest
 import params
 
 
-def findByPk(pk):
-    return None
-
-
 def retrievePk(body, event):
-    return None
+    return [ params.retrieveId(body, event) ]
 
 
 def retrieveAttributes(body, event):
-    return rest.retrieveAttributesFromParams(body, event, retrieveAttributeNames())
-
-
-def retrieveFilterKeys():
-    return ["licenseId", "email"]
-
-
-def retrieveAttributeNames():
-    return ["licenseId", "email", "product", "productVersion", "installationCode"]
+    return rest.retrieveAttributesFromParams(body, event, IncidentRepo().attributes)

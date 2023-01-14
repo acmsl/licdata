@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, "common")
 
-from licenserepo import LicenseRepo
+from orderrepo import OrderRepo
 import common
 import rest
 
@@ -11,5 +11,5 @@ def handler(event, context):
         event,
         context,
         common.retrieveAttributes,
-        LicenseRepo()
+        OrderRepo()
     )

@@ -1,6 +1,9 @@
 import sys
 
+sys.path.insert(0, "clients")
 sys.path.insert(0, "common")
+sys.path.insert(0, "licenses")
+sys.path.insert(0, "pcs")
 
 import json
 
