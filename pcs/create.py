@@ -10,5 +10,5 @@ import rest
 def handler(event, context):
 
     return rest.create(
-        event, context, common.retrievePk, common.retrieveAttributes, PcRepo()
+        event, context, common.retrievePk, common.retrieveAttributes, PcRepo(), "pcs"
     )

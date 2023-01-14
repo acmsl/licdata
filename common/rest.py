@@ -44,7 +44,8 @@ def create(
     context,
     retrievePk,
     retrieveAttributes,
-    repo
+    repo,
+    path
 ):
 
     status = 200
@@ -73,7 +74,7 @@ def create(
             respBody.update(attributes)
             response = resp.buildResponse(status, respBody, event, context)
             response["headers"].update(
-                {"Location": f"https://{host}/{repo.entityType}/{id}"}
+                {"Location": f"https://{host}/{path}/{id}"}
             )
 
     return response
@@ -145,12 +146,10 @@ def list(event, context, repo):
     else:
         (items, sha) = repo.list()
         if items:
-            status = 200
             respBody = items
             response = resp.buildResponse(status, respBody, event, context)
         else:
-            status = 404
-            respBody = {"error": "not found"}
+            respBody = []
             response = resp.buildResponse(status, respBody, event, context)
 
     return response

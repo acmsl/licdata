@@ -14,5 +14,6 @@ def handler(event, context):
         context,
         common.retrievePk,
         common.retrieveAttributes,
-        ClientRepo()
+        ClientRepo(),
+        "clients"
     )
