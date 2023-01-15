@@ -1,7 +1,6 @@
 import sys
 
 sys.path.insert(0, "common")
-import githubrepo
 import params
 import resp
 
@@ -44,8 +43,7 @@ def create(
     context,
     retrievePk,
     retrieveAttributes,
-    repo,
-    path
+    repo
 ):
 
     status = 200
@@ -74,7 +72,7 @@ def create(
             respBody.update(attributes)
             response = resp.buildResponse(status, respBody, event, context)
             response["headers"].update(
-                {"Location": f"https://{host}/{path}/{id}"}
+                {"Location": f"https://{host}/{repo.path}/{id}"}
             )
 
     return response
