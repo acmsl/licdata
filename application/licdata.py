@@ -3,14 +3,7 @@ import inspect
 import pkgutil
 import os
 sys.path.insert(0, "domain")
-from client_repo import ClientRepo
-from incident_repo import IncidentRepo
-from license_repo import LicenseRepo
-from order_repo import OrderRepo
-from pc_repo import PcRepo
-from prelicense_repo import PrelicenseRepo
-from product_repo import ProductRepo
-from product_type_repo import ProductTypeRepo
+from repo import Repo
 for folder in os.scandir("infrastructure"):
     if folder.is_dir():
         sys.path.insert(0, folder.path)
@@ -65,7 +58,6 @@ class Licdata():
         cls._singleton = Licdata()
         for repo in get_repo_interfaces():
             cls._singleton._repos[repo] = get_implementations(repo)[0]
-            print(f"Bound {repo} to {cls._singleton._repos[repo]}")
 
 
     @classmethod
