@@ -1,39 +1,36 @@
-import sys
-
-sys.path.insert(0, "common")
-import params
-import resp
+from params import load_body, retrieve_param, retrieve_id
+from resp import build_response
 
 
-def retrieveAttributesFromParams(body, event, attributeNames):
+def retrieve_attributes_from_params(body, event, attribute_names):
     result = {}
 
-    for attribute in attributeNames:
-        result[attribute] = params.retrieveParam(attribute, body, event, None)
+    for attribute in attribute_names:
+        result[attribute] = retrieve_param(attribute, body, event, None)
 
     return result
 
 
-def findById(event, context, repo):
+def find_by_id(event, context, repo):
     status = 200
 
-    (body, error) = params.loadBody(event)
+    (body, error) = load_body(event)
     if error:
         status = 500
-        respBody = {"error": "Cannot parse body"}
-        response = resp.buildResponse(status, respBody, event, context)
+        resp_body = {"error": "Cannot parse body"}
+        response = build_response(status, resp_body, event, context)
     else:
-        id = params.retrieveId(body, event)
+        id = retrieve_id(body, event)
 
-        (item, sha) = repo.findById(id)
+        (item, sha) = repo.find_by_id(id)
         if item:
             status = 200
-            respBody = item
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = item
+            response = build_response(status, resp_body, event, context)
         else:
             status = 404
-            respBody = {"error": "not found"}
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = {"error": "not found"}
+            response = build_response(status, resp_body, event, context)
 
     return response
 
@@ -42,35 +39,35 @@ def create(
     event,
     context,
     retrievePk,
-    retrieveAttributes,
+    retrieve_attributes,
     repo
 ):
 
     status = 200
 
-    (body, error) = params.loadBody(event)
+    (body, error) = load_body(event)
     if error:
         status = 500
-        respBody = {"error": "Cannot parse body"}
-        response = resp.buildResponse(status, respBody, event, context)
+        resp_body = {"error": "Cannot parse body"}
+        response = build_response(status, resp_body, event, context)
     else:
         pk = retrievePk(body, event)
-        attributes = retrieveAttributes(body, event)
+        attributes = retrieve_attributes(body, event)
 
-        (item, sha) = repo.findByPk(pk)
+        (item, sha) = repo.find_by_pk(pk)
         if item:
             status = 409
-            respBody = {"id": item["id"]}
-            respBody.update(attributes)
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = {"id": item["id"]}
+            resp_body.update(attributes)
+            response = build_response(status, resp_body, event, context)
         else:
             id = repo.insert(attributes)
             headers = event.get("headers", {})
             host = headers.get("host", event.get("host", ""))
             status = 201
-            respBody = {"id": id}
-            respBody.update(attributes)
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = {"id": id}
+            resp_body.update(attributes)
+            response = build_response(status, resp_body, event, context)
             response["headers"].update(
                 {"Location": f"https://{host}/{repo.path}/{id}"}
             )
@@ -78,30 +75,30 @@ def create(
     return response
 
 
-def update(event, context, retrieveAttributes, repo):
+def update(event, context, retrieve_attributes, repo):
 
     status = 200
 
-    (body, error) = params.loadBody(event)
+    (body, error) = load_body(event)
     if error:
         status = 500
-        respBody = {"error": "Cannot parse body"}
-        response = resp.buildResponse(status, respBody, event, context)
+        resp_body = {"error": "Cannot parse body"}
+        response = build_response(status, resp_body, event, context)
     else:
-        id = params.retrieveId(body, event)
-        attributes = retrieveAttributes(body, event)
+        id = retrieve_id(body, event)
+        attributes = retrieve_attributes(body, event)
         attributes["id"] = id
-        (item, sha) = repo.findById(id)
+        (item, sha) = repo.find_by_id(id)
         if item:
 
             repo.update(attributes)
             status = 200
-            respBody = attributes
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = attributes
+            response = build_response(status, resp_body, event, context)
         else:
             status = 404
-            respBody = {"error": "not found"}
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = {"error": "not found"}
+            response = build_response(status, resp_body, event, context)
 
     return response
 
@@ -110,24 +107,24 @@ def delete(event, context, repo):
 
     status = 200
 
-    (body, error) = params.loadBody(event)
+    (body, error) = load_body(event)
     if error:
         status = 500
-        respBody = {"error": "Cannot parse body"}
-        response = resp.buildResponse(status, respBody, event, context)
+        resp_body = {"error": "Cannot parse body"}
+        response = build_response(status, resp_body, event, context)
     else:
-        id = params.retrieveId(body, event)
+        id = retrieve_id(body, event)
 
-        (item, sha) = repo.findById(id)
+        (item, sha) = repo.find_by_id(id)
         if item:
             repo.delete(id)
             status = 200
-            respBody = {"id": item["id"]}
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = {"id": item["id"]}
+            response = build_response(status, resp_body, event, context)
         else:
             status = 404
-            respBody = {"error": "not found"}
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = {"error": "not found"}
+            response = build_response(status, resp_body, event, context)
 
     return response
 
@@ -136,18 +133,18 @@ def list(event, context, repo):
 
     status = 200
 
-    (body, error) = params.loadBody(event)
+    (body, error) = load_body(event)
     if error:
         status = 500
-        respBody = {"error": "Cannot parse body"}
-        response = resp.buildResponse(status, respBody, event, context)
+        resp_body = {"error": "Cannot parse body"}
+        response = build_response(status, resp_body, event, context)
     else:
         (items, sha) = repo.list()
         if items:
-            respBody = items
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = items
+            response = build_response(status, resp_body, event, context)
         else:
-            respBody = []
-            response = resp.buildResponse(status, respBody, event, context)
+            resp_body = []
+            response = build_response(status, resp_body, event, context)
 
     return response

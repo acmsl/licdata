@@ -3,8 +3,8 @@ import inspect
 
 class Entity():
 
-    __primaryKeyAttributes = []
-    __filterAttributes = []
+    __primary_key_attributes = []
+    __filter_attributes = []
     __attributes = []
 
     """
@@ -16,16 +16,16 @@ class Entity():
 
 
     @classmethod
-    def primaryKeyAttribute(cls, func):
-        cls.__primaryKeyAttributes.append(func.__name__)
+    def primary_key_attribute(cls, func):
+        cls.__primary_key_attributes.append(func.__name__)
         cls.__attributes.append(func.__name__)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
 
     @classmethod
-    def filterAttribute(cls, func):
-        cls.__filterKeyAttributes.append(func.__name__)
+    def filter_attribute(cls, func):
+        cls.__filter_key_attributes.append(func.__name__)
         cls.__attributes.append(func.__name__)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
@@ -40,13 +40,13 @@ class Entity():
 
 
     @classmethod
-    def primaryKey(cls):
-        return cls.__primaryKeyAttributes
+    def primary_key(cls):
+        return cls.__primary_key_attributes
 
 
     @classmethod
-    def filterAttributes(cls):
-        return cls.__filterAttributes
+    def filter_attributes(cls):
+        return cls.__filter_attributes
 
 
     @classmethod

@@ -1,7 +1,7 @@
 import json
 
 
-def buildResponse(status, body, event, context):
+def build_response(status, body, event, context):
 
     return {
         "headers": {"Content-Type": "application/json"},

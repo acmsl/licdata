@@ -3,7 +3,7 @@ import threading
 from github import Github
 
 
-def getRepo():
+def get_repo():
     local = threading.local()
 
     if not hasattr(local, "repo"):
@@ -13,15 +13,14 @@ def getRepo():
         if not hasattr(local, "github"):
             local.github = Github(local.token)
 
-        if not hasattr(local, "repositoryName"):
-            local.repositoryName = os.environ["GITHUB_REPO"]
+        if not hasattr(local, "repository_name"):
+            local.repository_name = os.environ["GITHUB_REPO"]
 
-        local.repo = local.github.get_repo(local.repositoryName)
+        local.repo = local.github.get_repo(local.repository_name)
 
     return local.repo
 
-
-def getBranch():
+def get_branch():
     local = threading.local()
 
     if not hasattr(local, "branch"):
@@ -30,5 +29,5 @@ def getBranch():
     return local.branch
 
 
-def getRepoAndBranch():
-    return (getRepo(), getBranch())
+def get_repo_and_branch():
+    return (get_repo(), get_branch())

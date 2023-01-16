@@ -20,7 +20,7 @@ class Client(Entity):
 
 
     @property
-    @Entity.primaryKeyAttribute
+    @Entity.primary_key_attribute
     def email(self):
         return self._email
 

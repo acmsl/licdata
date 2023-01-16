@@ -11,12 +11,10 @@ from client import Client
 
 def handler(event, context):
 
-    print(f"In clients/create.py#14")
-    print(Client.primaryKey())
     return rest.create(
         event,
         context,
-        common.retrievePk,
-        common.retrieveAttributes,
+        common.retrieve_pk,
+        common.retrieve_attributes,
         Licdata.clientRepo()
     )

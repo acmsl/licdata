@@ -1,16 +1,18 @@
-import githubaccess
-import crypt
+import sys
+sys.path.insert(0, "infrastructure")
+from crypt_utils import encrypt, decrypt_file
+from github_access import get_repo_and_branch
 
 
-def getContents(path):
+def get_contents(path):
     result = None
 
-    (repo, branch) = githubaccess.getRepoAndBranch()
+    (repo, branch) = get_repo_and_branch()
 
     file = repo.get_contents(path, ref=branch)
 
     try:
-        result = crypt.decryptFile(file, path)
+        result = decrypt_file(file, path)
     except Exception as e:
         result = None
         print(f"Cannot decrypt {path}: {e}")
@@ -18,16 +20,16 @@ def getContents(path):
     return (result, file.sha)
 
 
-def createFile(path, content, message):
+def create_file(path, content, message):
     result = None
 
-    (repo, branch) = githubaccess.getRepoAndBranch()
+    (repo, branch) = get_repo_and_branch()
 
     try:
         result = repo.create_file(
             path,
             message,
-            crypt.encrypt(content),
+            encrypt(content),
             branch=branch,
         )
     except Exception as e:
@@ -37,16 +39,16 @@ def createFile(path, content, message):
     return result
 
 
-def updateFile(path, content, message, hash):
+def update_file(path, content, message, hash):
     result = None
 
-    (repo, branch) = githubaccess.getRepoAndBranch()
+    (repo, branch) = get_repo_and_branch()
 
     try:
         result = repo.update_file(
             path,
             message,
-            crypt.encrypt(content),
+            encrypt(content),
             hash,
             branch=branch,
         )
@@ -57,10 +59,10 @@ def updateFile(path, content, message, hash):
     return result
 
 
-def deleteFile(path, message):
+def delete_file(path, message):
     result = None
 
-    (repo, branch) = githubaccess.getRepoAndBranch()
+    (repo, branch) = get_repo_and_branch()
 
     try:
         (result, hash) = getContents(path)

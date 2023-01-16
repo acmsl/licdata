@@ -11,16 +11,16 @@ class Repo:
 
 
     @property
-    def entityClass(self):
+    def entity_class(self):
         return self._entityClass
 
 
-    def findById(self, id):
+    def find_by_id(self, id):
         """Must be implemented by subclasses"""
         raise NotImplementedError("This method must be implemented by subclasses")
 
 
-    def findByAttribute(self, attributeName, attributeValue):
+    def find_by_attribute(self, attributeName, attributeValue):
         """Must be implemented by subclasses"""
         raise NotImplementedError("This method must be implemented by subclasses")
 
@@ -45,7 +45,7 @@ class Repo:
         raise NotImplementedError("This method must be implemented by subclasses")
 
 
-    def findByPk(self, pk):
+    def find_by_pk(self, pk):
         """Must be implemented by subclasses"""
         raise NotImplementedError("This method must be implemented by subclasses")
 

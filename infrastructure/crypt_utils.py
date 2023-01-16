@@ -3,7 +3,7 @@ import threading
 from cryptography.fernet import Fernet
 
 
-def getKey():
+def get_key():
     local = threading.local()
     if not hasattr(local, "key"):
         local.key = os.environ["KEY"]
@@ -11,19 +11,19 @@ def getKey():
     return local.key
 
 
-def encryptionEnabled():
+def encryption_enabled():
     local = threading.local()
     if not hasattr(local, "encryptedFiles"):
-        local.encryptedFiles = os.environ["ENCRYPTED_FILES"]
+        local.encrypted_files = os.environ["ENCRYPTED_FILES"]
 
-    return local.encryptedFiles
+    return local.encrypted_files
 
 
 def encrypt(content):
     result = None
 
-    if encryptionEnabled():
-        fernet = Fernet(getKey())
+    if encryption_enabled():
+        fernet = Fernet(get_key())
 
         try:
             result = fernet.encrypt(content.encode())
@@ -38,8 +38,8 @@ def encrypt(content):
 def decrypt(content):
     result = None
 
-    if encryptionEnabled():
-        fernet = Fernet(getKey())
+    if encryption_enabled():
+        fernet = Fernet(get_key())
 
         try:
             result = fernet.decrypt(content).decode()
@@ -51,10 +51,10 @@ def decrypt(content):
     return result
 
 
-def decryptFile(file, filePath):
+def decrypt_file(file, file_path):
     result = None
 
-    if encryptionEnabled():
+    if encryption_enabled():
         result = decrypt(file.decoded_content.decode())
 
     else:

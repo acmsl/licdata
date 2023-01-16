@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, "common")
 
-from clientrepo import ClientRepo
+from client_repo import ClientRepo
 import rest
 
 
