@@ -1,5 +1,5 @@
 from repo import Repo
-import sys
+from pc import Pc
 
 
 class PcRepo(Repo):
@@ -10,4 +10,4 @@ class PcRepo(Repo):
         """
         Creates a new PcRepo instance.
         """
-        super().__init__(getattr(sys.modules[__name__], 'Pc'))
+        super().__init__(Pc)

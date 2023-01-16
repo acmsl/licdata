@@ -1,5 +1,5 @@
 from repo import Repo
-import sys
+from license import License
 
 
 class LicenseRepo(Repo):
@@ -10,4 +10,4 @@ class LicenseRepo(Repo):
         """
         Creates a new LicenseRepo instance.
         """
-        super().__init__(getattr(sys.modules[__name__], 'License'))
+        super().__init__(License)

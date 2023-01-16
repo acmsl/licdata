@@ -1,5 +1,5 @@
 from repo import Repo
-import sys
+from client import Client
 
 
 class ClientRepo(Repo):
@@ -10,4 +10,4 @@ class ClientRepo(Repo):
         """
         Creates a new ClientRepo instance.
         """
-        super().__init__(getattr(sys.modules[__name__], 'Client'))
+        super().__init__(Client)

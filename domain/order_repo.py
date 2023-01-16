@@ -1,5 +1,5 @@
 from repo import Repo
-import sys
+from order import Order
 
 
 class OrderRepo(Repo):
@@ -10,4 +10,4 @@ class OrderRepo(Repo):
         """
         Creates a new OrderRepo instance.
         """
-        super().__init__(getattr(sys.modules[__name__], 'Order'))
+        super().__init__(Order)

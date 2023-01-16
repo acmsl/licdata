@@ -1,5 +1,5 @@
 from repo import Repo
-import sys
+from incident import Incident
 
 
 class IncidentRepo(Repo):
@@ -10,4 +10,4 @@ class IncidentRepo(Repo):
         """
         Creates a new IncidentRepo instance.
         """
-        super().__init__(getattr(sys.modules[__name__], 'Incident'))
+        super().__init__(Incident)

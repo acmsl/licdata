@@ -60,6 +60,6 @@ class Entity():
 
 
     @property
-    @attribute
     def created(self):
+        __attributes.append("created")
         return self._created

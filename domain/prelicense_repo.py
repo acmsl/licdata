@@ -1,20 +1,13 @@
-import sys
-
-sys.path.insert(0, "common")
-
 from repo import Repo
+from prelicense import Prelicense
 
 
 class PrelicenseRepo(Repo):
     """
-    A subclass of Repo that uses the /prelicenses subtree.
+    A subclass of Repo that manages Prelicenses.
     """
-
     def __init__(self):
-        """Creates a new PrelicenseRepo instance"""
-        super().__init__(
-            "prelicenses",
-            ["name"],
-            ["clientId"],
-            ["name", "clientId", "product", "productVersion", "liberationCode"],
-        )
+        """
+        Creates a new Prelicense instance.
+        """
+        super().__init__(Prelicense)

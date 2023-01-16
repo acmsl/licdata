@@ -1,5 +1,5 @@
 from repo import Repo
-import sys
+from product import Product
 
 
 class ProductRepo(Repo):
@@ -10,4 +10,4 @@ class ProductRepo(Repo):
         """
         Creates a new ProductRepo instance.
         """
-        super().__init__(getattr(sys.modules[__name__], 'Product'))
+        super().__init__(Product)
