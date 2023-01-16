@@ -13,7 +13,7 @@ class Pc(Entity):
 
 
     def __str__(self):
-        return f"{'id': '{self._id}', 'installation_code': '{self._installation_code}'}"
+        return f"{'id': '{self._id}', 'installation_code': '{self._installation_code}', 'created': '{self._created}'}"
 
 
     @property

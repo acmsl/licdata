@@ -5,6 +5,13 @@ import pkgutil
 import os
 sys.path.insert(0, "domain")
 from client_repo import ClientRepo
+from incident_repo import IncidentRepo
+from license_repo import LicenseRepo
+from order_repo import OrderRepo
+from pc_repo import PcRepo
+from prelicense_repo import PrelicenseRepo
+from product_repo import ProductRepo
+from product_type_repo import ProductTypeRepo
 for folder in os.scandir("infrastructure"):
     if folder.is_dir():
         sys.path.insert(0, folder.path)
@@ -18,6 +25,7 @@ class Licdata():
     def __init__(
             self,
             clientRepo: ClientRepo,
+            incidentRepo: IncidentRepo,
             licenseRepo: LicenseRepo,
             orderRepo: OrderRepo,
             pcRepo: PcRepo,
@@ -26,6 +34,7 @@ class Licdata():
             productRepo: ProductRepo
     ):
         self._clientRepo = clientRepo
+        self._incidentRepo = incidentRepo
         self._licenseRepo = licenseRepo
         self._orderRepo = orderRepo
         self._pcRepo = pcRepo
@@ -37,6 +46,11 @@ class Licdata():
     @property
     def clientRepo(self):
         return self._clientRepo
+
+
+    @property
+    def incidentRepo(self):
+        return self._incidentRepo
 
 
     @property
@@ -117,6 +131,7 @@ def get_implementations(interface):
 
 injector = Injector()
 injector.binder.bind(ClientRepo, to=get_implementations(ClientRepo)[0])
+injector.binder.bind(IncidentRepo, to=get_implementations(IncidentRepo)[0])
 injector.binder.bind(LicenseRepo, to=get_implementations(LicenseRepo)[0])
 injector.binder.bind(OrderRepo, to=get_implementations(OrderRepo)[0])
 injector.binder.bind(PcRepo, to=get_implementations(PcRepo)[0])

@@ -16,7 +16,7 @@ class Order(Entity):
 
 
     def __str__(self):
-        return f"{'id': '{self._id}', 'client_id': '{self._client_id}', 'product_id': '{self._product_id}', 'duration': '{self._duration}', 'order_date': '{self._order_date'}"
+        return f"{'id': '{self._id}', 'client_id': '{self._client_id}', 'product_id': '{self._product_id}', 'duration': '{self._duration}', 'order_date': '{self._order_date}', 'created': '{self._created}'}"
 
 
     @property

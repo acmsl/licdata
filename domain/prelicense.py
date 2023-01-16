@@ -15,7 +15,7 @@ class Prelicense(Entity):
 
 
     def __str__(self):
-        return f"{'id': '{self._id}', 'order_id': '{self._order_id}', 'seats': '{self._seats}', 'duration': '{self._duration}'}"
+        return f"{'id': '{self._id}', 'order_id': '{self._order_id}', 'seats': '{self._seats}', 'duration': '{self._duration}', 'created': '{self._created}'}"
 
 
     @property

@@ -14,7 +14,7 @@ class Product(Entity):
 
 
     def __str__(self):
-        return f"{'id': '{self._id}', 'product_type_id': '{self._product_type_id', 'version': '{self._product_version}'}"
+        return f"{'id': '{self._id}', 'product_type_id': '{self._product_type_id}', 'version': '{self._product_version}', 'created': '{self._created}'}"
 
 
     @property

@@ -16,7 +16,7 @@ class Client(Entity):
 
 
     def __str__(self):
-        return f"{'id': '{self._id}', 'email': '{self._email}', 'address': '{self._address}', 'contact': '{self._contact}', 'phone': '{self._phone}'}"
+        return f"{'id': '{self._id}', 'email': '{self._email}', 'address': '{self._address}', 'contact': '{self._contact}', 'phone': '{self._phone}', 'created': '{self._created}'}"
 
 
     @property

@@ -1,4 +1,4 @@
-import inspect
+from datetime import datetime
 
 
 class Entity():
@@ -6,19 +6,6 @@ class Entity():
     __primary_key_attributes = []
     __filter_attributes = []
     __attributes = []
-
-    """
-    Represents an entity.
-    """
-    def __init__(self, id):
-        """Creates a new Entity instance"""
-        self._id = id
-
-
-    @property
-    def id(self):
-        return self._id
-
 
     @classmethod
     def primary_key_attribute(cls, func):
@@ -43,7 +30,6 @@ class Entity():
             return func(*args, **kwargs)
 
 
-
     @classmethod
     def primary_key(cls):
         return cls.__primary_key_attributes
@@ -57,3 +43,23 @@ class Entity():
     @classmethod
     def attributes(cls):
         return cls.__attributes
+
+
+    """
+    Represents an entity.
+    """
+    def __init__(self, id):
+        """Creates a new Entity instance"""
+        self._id = id
+        self._created = datetime.now()
+
+
+    @property
+    def id(self):
+        return self._id
+
+
+    @property
+    @attribute
+    def created(self):
+        return self._created
