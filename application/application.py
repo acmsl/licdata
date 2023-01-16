@@ -1,7 +1,7 @@
 import sys
-
 sys.path.insert(0, "infrastructure/github")
 from github_client_repo import GithubClientRepo
+
 
 class Licdata():
 

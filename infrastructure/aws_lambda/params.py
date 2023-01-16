@@ -46,7 +46,7 @@ def retrieve_param(param_name, body, event, default_value):
         result = query_string_parameters.get(param_name)
 
     if not result:
-        pathParameters = event.get("pathParameters", {})
+        path_parameters = event.get("pathParameters", {})
         result = path_parameters.get(param_name)
 
     if not result:

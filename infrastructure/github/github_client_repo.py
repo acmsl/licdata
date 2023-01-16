@@ -11,9 +11,9 @@ class GithubClientRepo(ClientRepo):
         super().__init__()
         self._githubRepo = GithubRepo(
             "clients",
-            self._entityClass.primary_key(),
-            self._entityClass.filter_attributes(),
-            self._entityClass.attributes())
+            self._entity_class.primary_key(),
+            self._entity_class.filter_attributes(),
+            self._entity_class.attributes())
 
 
     def find_by_id(self, id):
