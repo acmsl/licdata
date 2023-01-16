@@ -45,12 +45,12 @@ class GithubRepo():
 
 
     def insert(self, item):
-        return github_adapter.insert(item, self._path, self._filter_attributes, self._attributes)
+        return github_adapter.insert(item, self._path, self._primary_key, self._filter_attributes, self._attributes)
 
 
     def update(self, item):
         return github_adapter.update(
-            item, self._path, self._filter_attributes, self._attributes)
+            item, self._path, self._primary_key, self._filter_attributes, self._attributes)
 
 
     def delete(self, id):

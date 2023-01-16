@@ -1,11 +1,13 @@
 from repo import Repo
-from client import Client
 import sys
+
 
 class ClientRepo(Repo):
     """
-    A subclass of Repo that uses the /clients subtree.
+    A subclass of Repo that manages Clients.
     """
     def __init__(self):
-        """Creates a new ClientRepo instance"""
-        super().__init__(getattr(sys.modules[__name__],'Client'))
+        """
+        Creates a new ClientRepo instance.
+        """
+        super().__init__(getattr(sys.modules[__name__], 'Client'))

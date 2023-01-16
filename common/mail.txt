@@ -1,1 +1,0 @@
-Correo de prueba enviado via endpoint.

@@ -1,10 +1,10 @@
 import sys
-
-sys.path.insert(0, "common")
-
-from licenserepo import LicenseRepo
+sys.path.insert(0, "application")
+sys.path.insert(0, "infrastructure/aws_lambda")
+from licdata import Licdata
+import common
 import rest
 
 
 def handler(event, context):
-    return rest.delete(event, context, LicenseRepo())
+    return rest.delete(event, context, Licdata.instance().licenseRepo)

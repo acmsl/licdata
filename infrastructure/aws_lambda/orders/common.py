@@ -1,15 +1,13 @@
 import sys
-
-sys.path.insert(0, "common")
-
-from orderrepo import OrderRepo
+sys.path.insert(0, "domain")
+sys.path.insert(0, "infrastructure/aws_lambda")
+from order import Order
 import rest
-import params
 
 
-def retrievePk(body, event):
-    return [ params.retrieveEmail(body, event) ]
+def retrieve_pk(body, event):
+    return rest.retrieve_attributes_from_params(body, event, Order.primary_key())
 
 
-def retrieveAttributes(body, event):
-    return rest.retrieveAttributesFromParams(body, event, OrderRepo().attributes)
+def retrieve_attributes(body, event):
+    return rest.retrieve_attributes_from_params(body, event, Order.attributes())

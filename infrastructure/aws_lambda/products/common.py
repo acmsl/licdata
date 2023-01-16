@@ -1,15 +1,13 @@
 import sys
-
-sys.path.insert(0, "common")
-
-from productrepo import ProductRepo
+sys.path.insert(0, "domain")
+sys.path.insert(0, "infrastructure/aws_lambda")
+from product import Product
 import rest
-import params
 
 
-def retrievePk(body, event):
-    return [params.retrieveEmail(body, event)]
+def retrieve_pk(body, event):
+    return rest.retrieve_attributes_from_params(body, event, Product.primary_key())
 
 
-def retrieveAttributes(body, event):
-    return rest.retrieveAttributesFromParams(body, event, ProductRepo().attributes)
+def retrieve_attributes(body, event):
+    return rest.retrieve_attributes_from_params(body, event, Product.attributes())

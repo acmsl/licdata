@@ -10,9 +10,14 @@ class Entity():
     """
     Represents an entity.
     """
-    def __init__(self):
+    def __init__(self, id):
         """Creates a new Entity instance"""
-        pass
+        self._id = id
+
+
+    @property
+    def id(self):
+        return self._id
 
 
     @classmethod

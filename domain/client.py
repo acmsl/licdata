@@ -6,9 +6,9 @@ class Client(Entity):
     Represents a client.
     """
 
-    def __init__(self, email, address, contact, phone):
+    def __init__(self, id, email, address, contact, phone):
         """Creates a new Client instance"""
-        super().__init__()
+        super().__init__(id)
         self._email = email
         self._address = address
         self._contact = contact
@@ -16,7 +16,7 @@ class Client(Entity):
 
 
     def __str__(self):
-        return f"{'email': '{self._email}', 'address': '{self._address}', 'contact': '{self._contact}', 'phone': '{self._phone}'}"
+        return f"{'id': '{self._id}', 'email': '{self._email}', 'address': '{self._address}', 'contact': '{self._contact}', 'phone': '{self._phone}'}"
 
 
     @property

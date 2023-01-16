@@ -1,9 +1,10 @@
 import sys
 sys.path.insert(0, "application")
 sys.path.insert(0, "infrastructure/aws_lambda")
-from application import Licdata
+from licdata import Licdata
 import common
 import rest
+
 
 def handler(event, context):
 
@@ -12,5 +13,4 @@ def handler(event, context):
         context,
         common.retrieve_pk,
         common.retrieve_attributes,
-        Licdata.clientRepo()
-    )
+        Licdata.instance().clientRepo)

@@ -6,10 +6,6 @@ class Repo:
         self._entity_class = entity_class
 
 
-    def __str__(self):
-        return f"{self._entity_class}"
-
-
     @property
     def entity_class(self):
         return self._entity_class

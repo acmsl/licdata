@@ -1,9 +1,10 @@
 import sys
-sys.path.insert(0, "common")
-
-from orderrepo import OrderRepo
+sys.path.insert(0, "application")
+sys.path.insert(0, "infrastructure/aws_lambda")
+from licdata import Licdata
+import common
 import rest
 
 
 def handler(event, context):
-    return rest.findById(event, context, OrderRepo())
+    return rest.find_by_id(event, context, Licdata.instance().orderRepo)

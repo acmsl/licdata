@@ -1,15 +1,13 @@
 import sys
-
-sys.path.insert(0, "common")
-
-from licenserepo import LicenseRepo
+sys.path.insert(0, "domain")
+sys.path.insert(0, "infrastructure/aws_lambda")
+from license import License
 import rest
-import params
 
 
-def retrievePk(body, event):
-    return [ ]
+def retrieve_pk(body, event):
+    return rest.retrieve_attributes_from_params(body, event, License.primary_key())
 
 
-def retrieveAttributes(body, event):
-    return rest.retrieveAttributesFromParams(body, event, LicenseRepo().attributes)
+def retrieve_attributes(body, event):
+    return rest.retrieve_attributes_from_params(body, event, License.attributes())

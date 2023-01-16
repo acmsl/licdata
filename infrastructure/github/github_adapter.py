@@ -76,13 +76,13 @@ def find_by_attributes(filter, path):
 
     return (result, sha)
 
-def insert(entity, path, filter_keys, attribute_names):
+def insert(entity, path, primary_key, filter_keys, attribute_names):
     result = None
     item = {}
     data = None
     sha = None
 
-    for attribute in filter_keys:
+    for attribute in primary_key + filter_keys:
         item[attribute] = entity.get(attribute)
 
     try:
@@ -97,7 +97,7 @@ def insert(entity, path, filter_keys, attribute_names):
         create_file(
             f"{path}/data.json",
             json.dumps(content),
-            f"First instance in {path} collection",
+            f"First instance in {path} collection: {result}",
         )
         non_filter_key_attributes = [
             attr for attr in attribute_names if attr not in filter_keys
@@ -145,13 +145,13 @@ def _attributes_match(item, target, attribute_names):
     return result
 
 
-def update(entity, path, filter_keys, attribute_names):
+def update(entity, path, primary_key, filter_keys, attribute_names):
 
     id = entity.get("id")
     item = {}
     item["id"] = id
     print(entity)
-    for attribute in filter_keys:
+    for attribute in primary_key + filter_keys:
         item[attribute] = entity.get(attribute)
     try:
         (data, sha) = get_contents(f"{path}/data.json")
