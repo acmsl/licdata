@@ -174,7 +174,7 @@ def update(entity, path, filter_keys, attribute_names):
     except:
         old_item = None
     if old_item:
-        nonFilterKeyAttributes = [
+        non_filter_key_attributes = [
             attr for attr in attribute_names if attr not in filter_keys
         ]
         for attribute in non_filter_key_attributes:

@@ -65,7 +65,7 @@ def delete_file(path, message):
     (repo, branch) = get_repo_and_branch()
 
     try:
-        (result, hash) = getContents(path)
+        (result, hash) = get_contents(path)
 
         result = repo.delete_file(
             path,

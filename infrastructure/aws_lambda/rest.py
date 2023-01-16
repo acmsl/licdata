@@ -69,7 +69,7 @@ def create(
             resp_body.update(attributes)
             response = build_response(status, resp_body, event, context)
             response["headers"].update(
-                {"Location": f"https://{host}/{repo.path}/{id}"}
+                {"Location": f"https://{host}/{repo.path()}/{id}"}
             )
 
     return response
