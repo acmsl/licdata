@@ -1,11 +1,10 @@
-from entity import Entity
+from entity import Entity, primary_key_attribute, attribute
 
 
 class Prelicense(Entity):
     """
     Represents a prelicense.
     """
-
     def __init__(self, id, order_id, seats, duration):
         """Creates a new Prelicense instance"""
         super().__init__(id)
@@ -14,23 +13,19 @@ class Prelicense(Entity):
         self._duration = duration
 
 
-    def __str__(self):
-        return f"{'id': '{self._id}', 'order_id': '{self._order_id}', 'seats': '{self._seats}', 'duration': '{self._duration}', 'created': '{self._created}'}"
-
-
     @property
-    @Entity.primary_key_attribute
+    @primary_key_attribute
     def order_id(self):
         return self._order_id
 
 
     @property
-    @Entity.attribute
+    @attribute
     def seats(self):
         return self._seats
 
 
     @property
-    @Entity.attribute
+    @attribute
     def duration(self):
         return self._duration

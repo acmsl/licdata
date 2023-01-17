@@ -38,7 +38,7 @@ def find_by_id(event, context, repo):
 def create(
     event,
     context,
-    retrievePk,
+    retrieve_pk,
     retrieve_attributes,
     repo
 ):
@@ -51,9 +51,10 @@ def create(
         resp_body = {"error": "Cannot parse body"}
         response = build_response(status, resp_body, event, context)
     else:
-        pk = retrievePk(body, event)
+        pk = retrieve_pk(body, event)
         attributes = retrieve_attributes(body, event)
 
+        print(f"About to call {repo}.find_by_pk({pk}) in rest.py for Incident>>create")
         (item, sha) = repo.find_by_pk(pk)
         if item:
             status = 409

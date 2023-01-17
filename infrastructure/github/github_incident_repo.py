@@ -63,6 +63,7 @@ class GithubIncidentRepo(IncidentRepo):
         """
         Retrieves a Incident by its primary key
         """
+        print(f"In github_incident_repo>>find_by_pk({pk})")
         return self._githubRepo.find_by_pk(pk)
 
 

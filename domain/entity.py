@@ -1,48 +1,82 @@
+import functools
 from datetime import datetime
+import inspect
+
+_primary_key_attributes = {}
+_filter_attributes = {}
+_attributes = {}
+
+def attribute(func):
+    key = inspect.getmodule(func).__name__.capitalize()
+    if not key in _attributes:
+        _attributes[key] = []
+    _attributes[key].append(func.__name__)
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
 
 
-class Entity():
+def primary_key_attribute(func):
+    key = inspect.getmodule(func).__name__.capitalize()
+    if not key in _primary_key_attributes:
+        _primary_key_attributes[key] = []
+    _primary_key_attributes[key].append(func.__name__)
+    attribute(func)
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
 
-    __primary_key_attributes = []
-    __filter_attributes = []
-    __attributes = []
+
+def filter_attribute(func):
+    key = inspect.getmodule(func).__name__.capitalize()
+    if not key in _filter_attributes:
+        _filter_attributes[key] = []
+    _filter_attributes[key].append(func.__name__)
+    attribute(func)
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+
+
+class Entity:
 
     @classmethod
-    def primary_key_attribute(cls, func):
-        cls.__primary_key_attributes.append(func.__name__)
-        cls.__attributes.append(func.__name__)
-        def wrapper(*args, **kwargs):
-            return func(*args, **kwargs)
-
-
-    @classmethod
-    def filter_attribute(cls, func):
-        cls.__filter_key_attributes.append(func.__name__)
-        cls.__attributes.append(func.__name__)
+    def filter_attribute(self, func):
+        self._filter_attributes.append(func.__name__)
+        self._attributes.append(func.__name__)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
 
     @classmethod
     def attribute(cls, func):
-        cls.__attributes.append(func.__name__)
+        cls._attributes.append(func.__name__)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
 
     @classmethod
     def primary_key(cls):
-        return cls.__primary_key_attributes
+        result = []
+        if cls.__name__ in _primary_key_attributes:
+            result = _primary_key_attributes[cls.__name__]
+        return result
 
 
     @classmethod
     def filter_attributes(cls):
-        return cls.__filter_attributes
+        result = []
+        if cls.__name__ in _filter_attributes:
+            result = _filter_attributes[cls.__name__]
+        return result
 
 
     @classmethod
     def attributes(cls):
-        return cls.__attributes
+        result = []
+        if cls.__name__ in _attributes:
+            result = _attributes[cls.__name__]
+        return result
 
 
     """
@@ -61,5 +95,14 @@ class Entity():
 
     @property
     def created(self):
-        __attributes.append("created")
+        self.__class__._attributes.append("created")
         return self._created
+
+
+    def __str__(self):
+        result = []
+        if self.__class__.__name__ in _attributes:
+            result.append(f"'id': '{self._id}'")
+            for attr in _attributes[self.__class__.__name__]:
+                result.append(f"'{attr}': '" + str(getattr(self, f"_{attr}")) + "'")
+        return "{ " + ", ".join(result) + " }"
