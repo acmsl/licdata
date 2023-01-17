@@ -1,15 +1,16 @@
 import functools
 from datetime import datetime
 import inspect
+import re
 
 _primary_key_attributes = {}
 _filter_attributes = {}
 _attributes = {}
 
 def attribute(func):
-    key = inspect.getmodule(func).__name__.capitalize()
+    key = inspect.getmodule(func).__name__
     if not key in _attributes:
-        _attributes[key] = []
+        _attributes[key] = [ ]
     _attributes[key].append(func.__name__)
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -17,7 +18,7 @@ def attribute(func):
 
 
 def primary_key_attribute(func):
-    key = inspect.getmodule(func).__name__.capitalize()
+    key = inspect.getmodule(func).__name__
     if not key in _primary_key_attributes:
         _primary_key_attributes[key] = []
     _primary_key_attributes[key].append(func.__name__)
@@ -28,7 +29,7 @@ def primary_key_attribute(func):
 
 
 def filter_attribute(func):
-    key = inspect.getmodule(func).__name__.capitalize()
+    key = inspect.getmodule(func).__name__
     if not key in _filter_attributes:
         _filter_attributes[key] = []
     _filter_attributes[key].append(func.__name__)
@@ -41,42 +42,30 @@ def filter_attribute(func):
 class Entity:
 
     @classmethod
-    def filter_attribute(self, func):
-        self._filter_attributes.append(func.__name__)
-        self._attributes.append(func.__name__)
-        def wrapper(*args, **kwargs):
-            return func(*args, **kwargs)
-
-
-    @classmethod
-    def attribute(cls, func):
-        cls._attributes.append(func.__name__)
-        def wrapper(*args, **kwargs):
-            return func(*args, **kwargs)
-
-
-    @classmethod
     def primary_key(cls):
         result = []
-        if cls.__name__ in _primary_key_attributes:
-            result = _primary_key_attributes[cls.__name__]
+        key = cls.__module__
+        if key in _primary_key_attributes:
+            result = _primary_key_attributes[key]
         return result
 
 
     @classmethod
     def filter_attributes(cls):
         result = []
-        if cls.__name__ in _filter_attributes:
-            result = _filter_attributes[cls.__name__]
+        key = cls.__module__
+        if key in _filter_attributes:
+            result = _filter_attributes[key]
         return result
 
 
     @classmethod
     def attributes(cls):
         result = []
-        if cls.__name__ in _attributes:
-            result = _attributes[cls.__name__]
-        return result
+        key = cls.__module__
+        if key in _attributes:
+            result = _attributes[key]
+        return [ "id" ] + result + [ "created" ]
 
 
     """
@@ -95,7 +84,6 @@ class Entity:
 
     @property
     def created(self):
-        self.__class__._attributes.append("created")
         return self._created
 
 

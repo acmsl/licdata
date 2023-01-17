@@ -50,14 +50,17 @@ class Licdata():
 
 
     def get_repo(self, cls):
-        return self._repos[cls]
+        result = None
+        if cls in self._repos:
+            result = self._repos[cls]
+        return result
 
 
     @classmethod
     def initialize(cls):
         cls._singleton = Licdata()
         for repo in get_repo_interfaces():
-            cls._singleton._repos[repo] = get_implementations(repo)[0]
+            cls._singleton._repos[repo] = get_implementations(repo)[0]()
 
 
     @classmethod

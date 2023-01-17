@@ -3,7 +3,7 @@ sys.path.insert(0, "domain")
 sys.path.insert(0, "application")
 sys.path.insert(0, "infrastructure/aws_lambda")
 from licdata import Licdata
-from product_types_repo import ProductTypeRepo
+from product_type_repo import ProductTypeRepo
 import common
 import rest
 

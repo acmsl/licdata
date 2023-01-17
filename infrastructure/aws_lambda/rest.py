@@ -1,6 +1,6 @@
 from params import load_body, retrieve_param, retrieve_id
 from resp import build_response
-
+import inspect
 
 def retrieve_attributes_from_params(body, event, attribute_names):
     result = {}
@@ -54,7 +54,6 @@ def create(
         pk = retrieve_pk(body, event)
         attributes = retrieve_attributes(body, event)
 
-        print(f"About to call {repo}.find_by_pk({pk}) in rest.py for Incident>>create")
         (item, sha) = repo.find_by_pk(pk)
         if item:
             status = 409
