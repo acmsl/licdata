@@ -26,13 +26,17 @@ class Order(Entity):
         return self._product_id
 
 
-    @property
-    @attribute
-    def duration(self):
-        return self._duration
+    @duration.setter
+    def duration(self, newValue):
+        self._duration = newValue
 
 
     @property
     @attribute
     def order_date(self):
         return self._order_date
+
+
+    @order_date.setter
+    def order_date(self, newValue):
+        self._order_date = newValue

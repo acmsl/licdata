@@ -1,6 +1,7 @@
+from github_raw import get_contents, create_file, update_file, delete_file
 from uuid import uuid4
 import json
-from github_raw import get_contents, create_file, update_file, delete_file
+from datetime import datetime
 
 
 def new_id():
@@ -77,10 +78,12 @@ def find_by_attributes(filter, path):
     return (result, sha)
 
 def insert(entity, path, primary_key, filter_keys, attribute_names):
-    result = None
-    item = {}
+    result = new_id()
+    created = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = None
     sha = None
+    item = {}
+    item["id"] = result
 
     for attribute in primary_key + filter_keys:
         item[attribute] = entity.get(attribute)
@@ -90,8 +93,6 @@ def insert(entity, path, primary_key, filter_keys, attribute_names):
     except:
         data = None
     if data is None:
-        result = new_id()
-        item["id"] = result
         content = []
         content.append(item)
         create_file(
@@ -99,24 +100,12 @@ def insert(entity, path, primary_key, filter_keys, attribute_names):
             json.dumps(content),
             f"First instance in {path} collection: {result}",
         )
-        non_filter_key_attributes = [
-            attr for attr in attribute_names if attr not in filter_keys
-        ]
-        for attribute in non_filter_key_attributes:
-            item[attribute] = entity.get(attribute)
-        create_file(
-            f"{path}/{result}/data.json",
-            json.dumps(item),
-            f"Created a new {path} entry with id {result}",
-        )
     else:
         content = json.loads(data)
         entries = [x for x in content if _attributes_match(x, entity, filter_keys)]
         if entries:
             result = entries[0]["id"]
         else:
-            result = new_id()
-            item["id"] = result
             content.append(item)
             update_file(
                 f"{path}/data.json",
@@ -124,13 +113,18 @@ def insert(entity, path, primary_key, filter_keys, attribute_names):
                 f"Updated {result} in {path} collection",
                 sha,
             )
-            for attribute in attribute_names:
-                item[attribute] = entity.get(attribute)
-            create_file(
-                f"{path}/{result}/data.json",
-                json.dumps(item),
-                f"Created a new entry {result} in {path} collection",
-            )
+
+    for attribute in [ x for x in attribute_names if entity.get(attribute) is not None ]:
+        item[attribute] = entity.get(attribute)
+    item["id"] = result
+    item["_created"] = created
+    print(f"Inserting {item} in {path}/{result}/data.json")
+    create_file(
+        f"{path}/{result}/data.json",
+        json.dumps(item),
+        f"Created a new entry {result} in {path} collection",
+    )
+
     return result
 
 
@@ -150,7 +144,6 @@ def update(entity, path, primary_key, filter_keys, attribute_names):
     id = entity.get("id")
     item = {}
     item["id"] = id
-    print(entity)
     for attribute in primary_key + filter_keys:
         item[attribute] = entity.get(attribute)
     try:
@@ -174,11 +167,11 @@ def update(entity, path, primary_key, filter_keys, attribute_names):
     except:
         old_item = None
     if old_item:
-        non_filter_key_attributes = [
-            attr for attr in attribute_names if attr not in filter_keys
-        ]
-        for attribute in non_filter_key_attributes:
+        for attribute in attribute_names:
             item[attribute] = entity.get(attribute)
+        item["id"] = id
+        item["_created"] = entity.get("_created")
+        item["_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         update_file(
             f"{path}/{id}/data.json",
             json.dumps(item),

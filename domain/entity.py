@@ -13,8 +13,8 @@ def attribute(func):
         _attributes[key] = [ ]
     _attributes[key].append(func.__name__)
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
+    def wrapper(self, *args, **kwargs):
+        return func(self, *args, **kwargs)
 
 
 def primary_key_attribute(func):
@@ -65,7 +65,7 @@ class Entity:
         key = cls.__module__
         if key in _attributes:
             result = _attributes[key]
-        return [ "id" ] + result + [ "created" ]
+        return [ "id" ] + result + [ "_created", "_updated" ]
 
 
     """
@@ -75,6 +75,7 @@ class Entity:
         """Creates a new Entity instance"""
         self._id = id
         self._created = datetime.now()
+        self._updated = None
 
 
     @property
@@ -87,10 +88,28 @@ class Entity:
         return self._created
 
 
+    @property
+    def updated(self):
+        return self._updated
+
+
     def __str__(self):
         result = []
-        if self.__class__.__name__ in _attributes:
+        key = inspect.getmodule(self.__class__).__name__
+        if key in _attributes:
             result.append(f"'id': '{self._id}'")
-            for attr in _attributes[self.__class__.__name__]:
+            for attr in _attributes[key]:
                 result.append(f"'{attr}': '" + str(getattr(self, f"_{attr}")) + "'")
+            result.append(f"'_created': '{self._created}'")
+            if self._updated:
+                result.append(f"'_updated': '{self._updated}'")
+
         return "{ " + ", ".join(result) + " }"
+
+
+    def __setattr__(self, varName, varValue):
+        key = inspect.getmodule(self.__class__).__name__
+        if key in _attributes:
+            if varName in [ x for x in _attributes[key] ]:
+                self._updated = datetime.now()
+        super(Entity, self).__setattr__(varName, varValue)

@@ -32,7 +32,17 @@ class License(Entity):
         return self._duration
 
 
+    @duration.setter
+    def duration(self, newValue):
+        self._duration = newValue
+
+
     @property
     @attribute
     def order_date(self):
         return self._order_date
+
+
+    @order_date.setter
+    def order_date(self, newValue):
+        self._order_date = newValue

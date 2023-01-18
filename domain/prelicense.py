@@ -25,7 +25,17 @@ class Prelicense(Entity):
         return self._seats
 
 
+    @seats.setter
+    def seats(self, newValue):
+        self._seats = newValue
+
+
     @property
     @attribute
     def duration(self):
         return self._duration
+
+
+    @duration.setter
+    def duration(self, newValue):
+        self._duration = newValue
