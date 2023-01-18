@@ -1,15 +1,16 @@
 import github_adapter
 
 class GithubRepo():
-    def __init__(self, path, primary_key, filter_attributes, attributes):
+    def __init__(self, path, entityClass):
         self._path = path
-        self._primary_key = primary_key
-        self._filter_attributes = filter_attributes
-        self._attributes = attributes
+        self._primary_key = entityClass.primary_key()
+        self._filter_attributes = entityClass.filter_attributes()
+        self._attributes = _entityClass.attributes()
+        self._encrypted_attributes = entityClass.encrypted_attributes()
 
 
     def __str__(self):
-        return f"path: {self._path} pk: {self._primary_key}, filters: {self._filter_attributes}, attributes: {self._attributes}"
+        return f"{ 'path': '{self._path}', 'primary_key': '{self._primary_key}', 'filter_attributes': '{self._filter_attributes}', 'attributes': '{self._attributes}', 'encrypted_attributes': '{self._encripted_attributes}'}"
 
 
     @property
@@ -32,6 +33,11 @@ class GithubRepo():
         return self._attributes
 
 
+    @property
+    def encrypted_attributes(self):
+        return self._encrypted_attributes
+
+
     def find_by_id(self, id):
         return github_adapter.find_by_id(id, self._path)
 
@@ -45,12 +51,12 @@ class GithubRepo():
 
 
     def insert(self, item):
-        return github_adapter.insert(item, self._path, self._primary_key, self._filter_attributes, self._attributes)
+        return github_adapter.insert(item, self._path, self._primary_key, self._filter_attributes, self._attributes, self._encrypted_attributes)
 
 
     def update(self, item):
         return github_adapter.update(
-            item, self._path, self._primary_key, self._filter_attributes, self._attributes)
+            item, self._path, self._primary_key, self._filter_attributes, self._attributes, self._encrypted_attributes)
 
 
     def delete(self, id):

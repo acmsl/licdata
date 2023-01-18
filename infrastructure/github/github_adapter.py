@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, "infrastructure")
+from crypt_utils import encrypt
 from github_raw import get_contents, create_file, update_file, delete_file
 from uuid import uuid4
 import json
@@ -77,7 +80,7 @@ def find_by_attributes(filter, path):
 
     return (result, sha)
 
-def insert(entity, path, primary_key, filter_keys, attribute_names):
+def insert(entity, path, primary_key, filter_keys, attribute_names, encrypted_attributes):
     result = new_id()
     created = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = None
@@ -86,7 +89,10 @@ def insert(entity, path, primary_key, filter_keys, attribute_names):
     item["id"] = result
 
     for attribute in primary_key + filter_keys:
-        item[attribute] = entity.get(attribute)
+        value = entity.get(attribute)
+        if attribute in encrypted_attributes:
+            value = encrypt(value)
+        item[attribute] = value
 
     try:
         (data, sha) = get_contents(f"{path}/data.json")
@@ -114,10 +120,13 @@ def insert(entity, path, primary_key, filter_keys, attribute_names):
                 sha,
             )
 
-    for attribute in [ x for x in attribute_names if entity.get(attribute) is not None ]:
-        item[attribute] = entity.get(attribute)
-    item["id"] = result
+    for attribute in attribute_names:
+        value = entity.get(attribute)
+        if attribute in encrypted_attributes:
+            value = encrypt(value)
+        item[attribute] = value
     item["_created"] = created
+    item.pop("_updated", None)
     print(f"Inserting {item} in {path}/{result}/data.json")
     create_file(
         f"{path}/{result}/data.json",
@@ -139,13 +148,16 @@ def _attributes_match(item, target, attribute_names):
     return result
 
 
-def update(entity, path, primary_key, filter_keys, attribute_names):
+def update(entity, path, primary_key, filter_keys, attribute_names, encrypted_attributes):
 
     id = entity.get("id")
     item = {}
     item["id"] = id
     for attribute in primary_key + filter_keys:
-        item[attribute] = entity.get(attribute)
+        value = entity.get(attribute)
+        if attribute in encrypted_attributes:
+            value = encrypt(value)
+        item[attribute] = value
     try:
         (data, sha) = get_contents(f"{path}/data.json")
     except:
@@ -168,7 +180,10 @@ def update(entity, path, primary_key, filter_keys, attribute_names):
         old_item = None
     if old_item:
         for attribute in attribute_names:
-            item[attribute] = entity.get(attribute)
+            value = entity.get(attribute)
+            if attribute in encrypted_attributes:
+                value = encrypt(value)
+            item[attribute] = value
         item["id"] = id
         item["_created"] = entity.get("_created")
         item["_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

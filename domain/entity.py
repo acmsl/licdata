@@ -6,6 +6,7 @@ import re
 _primary_key_attributes = {}
 _filter_attributes = {}
 _attributes = {}
+_encrypted_attributes = {}
 
 def attribute(func):
     key = inspect.getmodule(func).__name__
@@ -39,6 +40,17 @@ def filter_attribute(func):
         return func(*args, **kwargs)
 
 
+def encrypted_attribute(func):
+    key = inspect.getmodule(func).__name__
+    if not key in _encrypted_attributes:
+        _encrypted_attributes[key] = [ ]
+    _encrypted_attributes[key].append(func.__name__)
+    attribute(func)
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        return func(self, *args, **kwargs)
+
+
 class Entity:
 
     @classmethod
@@ -67,6 +79,14 @@ class Entity:
             result = _attributes[key]
         return [ "id" ] + result + [ "_created", "_updated" ]
 
+
+    @classmethod
+    def encrypted_attributes(cls):
+        result = []
+        key = cls.__module__
+        if key in _encrypted_attributes:
+            result = _encrypted_attributes[key]
+        return result
 
     """
     Represents an entity.

@@ -68,6 +68,7 @@ def create(
             response = build_response(status, resp_body, event, context)
         else:
             attributes["_created"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            attributes.pop("_updated", None)
             id = repo.insert(attributes)
             headers = event.get("headers", {})
             host = headers.get("host", event.get("host", ""))
@@ -97,11 +98,10 @@ def update(event, context, retrieve_attributes, repo):
         attributes = retrieve_attributes(body, event)
         attributes["id"] = id
         (item, sha) = repo.find_by_id(id)
-        attributes["_created"] = item["_created"]
         if item:
-            repo.update(attributes)
+            attributes["_created"] = item["_created"]
+            resp_body = repo.update(attributes)
             status = 200
-            resp_body = attributes
             response = build_response(status, resp_body, event, context)
         else:
             status = 404

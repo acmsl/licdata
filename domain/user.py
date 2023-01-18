@@ -1,9 +1,9 @@
-from entity import Entity, primary_key_attribute
+from entity import Entity, primary_key_attribute, filter_attribute, encrypted_attribute
 
 
 class User(Entity):
     """
-    Represents a user.
+    Represents an user.
     """
     def __init__(self, id, email, password):
         """Creates a new User instance"""
@@ -24,7 +24,7 @@ class User(Entity):
 
 
     @property
-    @filter_attribute
+    @encrypted_attribute
     def password(self):
         return self._password
 

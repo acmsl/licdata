@@ -10,11 +10,7 @@ class GithubClientRepo(ClientRepo):
     """
     def __init__(self):
         super().__init__()
-        self._githubRepo = GithubRepo(
-            "clients",
-            self._entity_class.primary_key(),
-            self._entity_class.filter_attributes(),
-            self._entity_class.attributes())
+        self._githubRepo = GithubRepo("clients", self._entity_class)
 
 
     def path(self):
