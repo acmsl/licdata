@@ -17,3 +17,4 @@ var/
 node_modules/
 **/__pycache__/**
 .serverless
+**/*.mine
