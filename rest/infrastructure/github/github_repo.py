@@ -5,7 +5,7 @@ class GithubRepo():
         self._path = path
         self._primary_key = entityClass.primary_key()
         self._filter_attributes = entityClass.filter_attributes()
-        self._attributes = _entityClass.attributes()
+        self._attributes = entityClass.attributes()
         self._encrypted_attributes = entityClass.encrypted_attributes()
 
 
