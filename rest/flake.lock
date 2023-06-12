@@ -1,0 +1,162 @@
+{
+  "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1652776076,
+        "narHash": "sha256-gzTw/v1vj4dOVbpBSJX4J0DwUR6LIyXo7/SuuTJp1kM=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "04c1b180862888302ddfb2e3ad9eaa63afc60cf8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "ref": "v1.0.0",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "nixos": {
+      "locked": {
+        "lastModified": 1686431482,
+        "narHash": "sha256-oPVQ/0YP7yC2ztNsxvWLrV+f0NQ2QAwxbrZ+bgGydEM=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d3bb401dcfc5a46ce51cdfb5762e70cc75d082d2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-23.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "poetry2nix": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixos"
+        ]
+      },
+      "locked": {
+        "lastModified": 1651700095,
+        "narHash": "sha256-xeo702X83g7s2J22AAvtN/FkB1M0TUbZ+SGuMMNzk8s=",
+        "owner": "nix-community",
+        "repo": "poetry2nix",
+        "rev": "b00b6b6ef8471e912f2f09e826ca9acc127cee4f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "v1.28.0",
+        "repo": "poetry2nix",
+        "type": "github"
+      }
+    },
+    "pythoneda-application-base": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixos": [
+          "nixos"
+        ],
+        "poetry2nix": [
+          "poetry2nix"
+        ],
+        "pythoneda-base": [
+          "pythoneda-base"
+        ],
+        "pythoneda-infrastructure-base": [
+          "pythoneda-infrastructure-base"
+        ]
+      },
+      "locked": {
+        "lastModified": 1686583625,
+        "narHash": "sha256-zSMRRIDotJAsj2uNjJoDXOxR3kGrEJ2sIiXCb2j2nv8=",
+        "owner": "pythoneda-application",
+        "repo": "base",
+        "rev": "8e6ca8e4cbb4ba43ba9a0c35bec6a8497fe782ea",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pythoneda-application",
+        "ref": "0.0.1a6",
+        "repo": "base",
+        "type": "github"
+      }
+    },
+    "pythoneda-base": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixos": [
+          "nixos"
+        ],
+        "poetry2nix": [
+          "poetry2nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1686566305,
+        "narHash": "sha256-Jeh5HAbfUouZYFk2FftJuVVu+b1NhwhHalxGTOwWDZ0=",
+        "owner": "pythoneda",
+        "repo": "base",
+        "rev": "1886eb536a7d4487faaa4736d68b3d97fe23c333",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pythoneda",
+        "ref": "0.0.1a11",
+        "repo": "base",
+        "type": "github"
+      }
+    },
+    "pythoneda-infrastructure-base": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixos": [
+          "nixos"
+        ],
+        "poetry2nix": [
+          "poetry2nix"
+        ],
+        "pythoneda-base": [
+          "pythoneda-base"
+        ]
+      },
+      "locked": {
+        "lastModified": 1686583515,
+        "narHash": "sha256-9JE0Ehw/5ZCXe2gE2xcysXr+VHoEWUpV5t0mJuOr+mA=",
+        "owner": "pythoneda-infrastructure",
+        "repo": "base",
+        "rev": "7d73f0a1a0d5dff91f777bda178e1f470ab06905",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pythoneda-infrastructure",
+        "ref": "0.0.1a6",
+        "repo": "base",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixos": "nixos",
+        "poetry2nix": "poetry2nix",
+        "pythoneda-application-base": "pythoneda-application-base",
+        "pythoneda-base": "pythoneda-base",
+        "pythoneda-infrastructure-base": "pythoneda-infrastructure-base"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

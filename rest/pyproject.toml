@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "licdata-server"
+version = "0.0.1a2"
+description = "Licdata server"
+authors = ["rydnr <github@acm-sl.org>"]
+readme = "README.md"
+homepage = "https://github.com/acmslcom/licdata"
+packages = [{ include = "domain" }, { include = "infrastructure" }, { include = "application" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pythoneda-base = "^0.0.1a11"
+pythoneda-infrastructure-base = "^0.0.1a6"
+pythoneda-application-base = "^0.0.1a6"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
