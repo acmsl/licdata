@@ -1,17 +1,50 @@
-import sys
-sys.path.insert(0, "infrastructure")
-from crypt_utils import encrypt
+"""
+licdata/rest/infrastructure/github/github_adapter.py
+
+This file provides some functions to use github as domain repository.
+
+Copyright (C) 2023-today ACM S.L. Licdata
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+from infrastructure.crypt_utils import encrypt
+
 from github_raw import get_contents, create_file, update_file, delete_file
 from uuid import uuid4
 import json
 from datetime import datetime
+from typing import Dict, List
 
-
-def new_id():
+def new_id() -> str:
+    """
+    Creates a new id.
+    :return: The id.
+    :rtype: str
+    """
     return str(uuid4())
 
 
-def find_by_id(id, path):
+def find_by_id(id: str, path: str):
+    """
+    Finds an item matching given id (using the path structure in github).
+    :param id: The id.
+    :type id: str
+    :param path: The relative path.
+    :type path: str
+    :return: The tuple (item, sha)
+    :rtype: tuple
+    """
     item = None
 
     data = None
@@ -29,7 +62,16 @@ def find_by_id(id, path):
     return (item, sha)
 
 
-def find_all_by_attributes(filter, path):
+def find_all_by_attributes(filter: Dict, path: str):
+    """
+    Retrieves all items matching given attribute values.
+    :param filter: The attribute filter.
+    :type filter: Dict
+    :param path: The relative path.
+    :type path: str
+    :return: A tuple of the items and the checksum.
+    :rtype: tuple
+    """
     result = []
 
     sha = None
@@ -50,25 +92,56 @@ def find_all_by_attributes(filter, path):
     return (result, sha)
 
 
-def find_all_by_attribute(attribute_value, attribute_name, path):
+def find_all_by_attribute(attributeValue: str, attributeName: str, path: str):
+    """
+    Finds all items matching one attribute filter.
+    :param attributeValue: The attribute value.
+    :type attributeValue: str
+    :param attributeName: The attribute name.
+    :type attributeName: str
+    :param path: The relative path.
+    :type path: str
+    :return: The tuple of matching items and the checksum.
+    :rtype: tuple
+    """
     filter = {}
-    filter[attribute_name] = attribute_value
+    filter[attributeName] = attributeValue
     return find_all_by_attributes(filter, path)
 
 
-def find_by_attribute(attribute_value, attribute_name, path):
+def find_by_attribute(attributeValue: str, attributeName: str, path):
+    """
+    Finds an item matching one attribute filter.
+    :param attributeValue: The attribute value.
+    :type attributeValue: str
+    :param attributeName: The attribute name.
+    :type attributeName: str
+    :param path: The relative path.
+    :type path: str
+    :return: The tuple of matching item and the checksum.
+    :rtype: tuple
+    """
     result = None
 
-    (items, sha) = find_all_by_attribute(attribute_value, attribute_name, path)
+    (items, sha) = find_all_by_attribute(attributeValue, attributeName, path)
 
     if items:
         result = items[0]
     else:
-        print(f"No {path} with {attribute_name} {attribute_value}")
+        print(f"No {path} with {attributeName} {attributeValue}")
 
     return (result, sha)
 
-def find_by_attributes(filter, path):
+def find_by_attributes(filter: Dict, path):
+    """
+    Finds an item matching given attribute filter.
+    :param filter: The attribute filter.
+    :type filter: Dict
+    :param path: The relative path.
+    :type path: str
+    :return: The tuple of matching item and the checksum.
+    :rtype: tuple
+    """
     result = None
 
     (items, sha) = find_all_by_attributes(filter, path)
@@ -80,7 +153,24 @@ def find_by_attributes(filter, path):
 
     return (result, sha)
 
-def insert(entity, path, primary_key, filter_keys, attribute_names, encrypted_attributes):
+def insert(entity, path: str, primaryKey: List, filterKeys: List, attributeNames: List, encryptedAttributes: List):
+    """
+    Inserts a new entity.
+    :param entity: The entity to persist.
+    :type entity: ValueObject from pythoneda.value_object
+    :param path: The relative path.
+    :type path: str
+    :param primaryKey: The entity's primary key.
+    :type primaryKey: List
+    :param filterKeys: The entity's filter keys.
+    :type filterKeys: List
+    :param attributeNames: The entity's attribute names.
+    :type attributeNames: List
+    :param encryptedAttributes: The names of the attributes that need to be encrypted.
+    :type encryptedAttributes: List
+    :return: The id of the persisted entity.
+    :rtype: str
+    """
     result = new_id()
     created = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = None
@@ -88,9 +178,9 @@ def insert(entity, path, primary_key, filter_keys, attribute_names, encrypted_at
     item = {}
     item["id"] = result
 
-    for attribute in primary_key + filter_keys:
+    for attribute in primaryKey + filterKeys:
         value = entity.get(attribute)
-        if attribute in encrypted_attributes:
+        if attribute in encryptedAttributes:
             value = encrypt(value)
         item[attribute] = value
 
@@ -108,7 +198,7 @@ def insert(entity, path, primary_key, filter_keys, attribute_names, encrypted_at
         )
     else:
         content = json.loads(data)
-        entries = [x for x in content if _attributes_match(x, entity, filter_keys)]
+        entries = [x for x in content if _attributes_match(x, entity, filterKeys)]
         if entries:
             result = entries[0]["id"]
         else:
@@ -120,9 +210,9 @@ def insert(entity, path, primary_key, filter_keys, attribute_names, encrypted_at
                 sha,
             )
 
-    for attribute in attribute_names:
+    for attribute in attributeNames:
         value = entity.get(attribute)
-        if attribute in encrypted_attributes:
+        if attribute in encryptedAttributes:
             value = encrypt(value)
         item[attribute] = value
     item["_created"] = created
@@ -137,7 +227,17 @@ def insert(entity, path, primary_key, filter_keys, attribute_names, encrypted_at
     return result
 
 
-def _attributes_match(item, target, attribute_names):
+def _attributes_match(item, target, attributeNames: List):
+    """
+    Checks if two entities share the same attributes.
+    :param item: The first entity.
+    :type item: ValueObject from pythoneda.value_object
+    :param target: The second entity.
+    :type target: ValueObject from pythoneda.value_object
+    :param attributeNames: The attributes to check.
+    :return: True if they share the same attributes.
+    :rtype: bool
+    """
     result = True
 
     for attribute_name in attribute_names:
@@ -148,14 +248,28 @@ def _attributes_match(item, target, attribute_names):
     return result
 
 
-def update(entity, path, primary_key, filter_keys, attribute_names, encrypted_attributes):
-
+def update(entity, path: str, primaryKey: List, filterKeys: List, attributeNames: List, encryptedAttributes: List):
+    """
+    Updates given entity.
+    :param entity: The entity to update.
+    :type entity: ValueObject from pythoneda.value_object
+    :param path: The relative path.
+    :type path: str
+    :param primaryKey: The entity's primary key.
+    :type primaryKey: List
+    :param filterKeys: The entity's filter keys.
+    :type filterKeys: List
+    :param attributeNames: The entity's attribute names.
+    :type attributeNames: List
+    :param encryptedAttributes: The names of the attributes that need to be encrypted.
+    :type encryptedAttributes: List
+    """
     id = entity.get("id")
     item = {}
     item["id"] = id
-    for attribute in primary_key + filter_keys:
+    for attribute in primaryKey + filterKeys:
         value = entity.get(attribute)
-        if attribute in encrypted_attributes:
+        if attribute in encryptedAttributes:
             value = encrypt(value)
         item[attribute] = value
     try:
@@ -165,7 +279,7 @@ def update(entity, path, primary_key, filter_keys, attribute_names, encrypted_at
     if data:
         content = json.loads(data)
         existing = [x for x in content if x.get("id") == id]
-        if existing and not _attributes_match(existing[0], entity, attribute_names):
+        if existing and not _attributes_match(existing[0], entity, attributeNames):
             remaining = [x for x in content if x.get("id") != id]
             remaining.append(item)
             update_file(
@@ -179,9 +293,9 @@ def update(entity, path, primary_key, filter_keys, attribute_names, encrypted_at
     except:
         old_item = None
     if old_item:
-        for attribute in attribute_names:
+        for attribute in attributeNames:
             value = entity.get(attribute)
-            if attribute in encrypted_attributes:
+            if attribute in encryptedAttributes:
                 value = encrypt(value)
             item[attribute] = value
         item["id"] = id
@@ -199,7 +313,16 @@ def update(entity, path, primary_key, filter_keys, attribute_names, encrypted_at
     return item
 
 
-def delete(id, path):
+def delete(id: str, path: str):
+    """
+    Deletes an item in the repository.
+    :param id: The id.
+    :type id: str
+    :param path: The relative path.
+    :type path: str
+    :return: True if the item gets removed.
+    :rtype: bool
+    """
     result = False
 
     try:
@@ -224,7 +347,14 @@ def delete(id, path):
     return result
 
 
-def list(path):
+def list(path: str) -> List:
+    """
+    Retrieves all items.
+    :param path: The relative path.
+    :type path: str
+    :return: The list of all items.
+    :rtype: List
+    """
     result = []
     sha = None
 

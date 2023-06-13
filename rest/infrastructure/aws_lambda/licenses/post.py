@@ -1,20 +1,46 @@
-import sys
+"""
+licdata/rest/infrastructure/aws_lambda/licenses/post.py
 
-sys.path.insert(0, "common")
+This file provides an AWS Lambda handler to create a license as well as associated entities.
+
+Copyright (C) 2023-today ACM S.L. Licdata
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+import domain.clientrepo
+import domain.licenserepo
+import domain.pcrepo
+import infrastructure.aws_lambda.params
+import infrastructure.aws_lambda.mail
+import infrastructure.aws_lambda.resp
+
 import base64
 import json
 from github import Github
 import os
 
-import clientrepo
-import licenserepo
-import params
-import pcrepo
-import mail
-import resp
 
 def handler(event, context):
-
+    """
+    AWS Lambda handler to create a new license as well as associated entities.
+    :param event: The AWS Lambda event.
+    :type event: event
+    :param context: The AWS Lambda context.
+    :type context: context
+    :return: The response.
+    :rtype: Dict
+    """
     headers = event.get("headers", {})
     host = headers.get("host", event.get("host", ""))
 

@@ -1,18 +1,45 @@
-import sys
+"""
+licdata/rest/infrastructure/aws_lambda/licenses/isValid.py
 
-sys.path.insert(0, "common")
+This file provides an AWS Lambda handler to check if a license is valid.
+
+Copyright (C) 2023-today ACM S.L. Licdata
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+from application.licdata import Licdata
+import domain.incidentrepo
+import domain.licenserepo
+import infrastructure.aws_lambda.mail
+import infrastructure.aws_lambda.params
+import infrastructure.aws_lambda.resp
+
 import json
 import os
 import datetime
 
-import incidentrepo
-import licenserepo
-import mail
-import params
-import resp
 
 def handler(event, context):
-
+    """
+    AWS Lambda handler to check if a license is valid.
+    :param event: The AWS Lambda event.
+    :type event: event
+    :param context: The AWS Lambda context.
+    :type context: context
+    :return: The response.
+    :rtype: Dict
+    """
     status = 410
     file = None
 

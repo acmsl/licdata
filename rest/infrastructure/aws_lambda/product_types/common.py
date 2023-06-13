@@ -1,13 +1,49 @@
-import sys
-sys.path.insert(0, "domain")
-sys.path.insert(0, "infrastructure/aws_lambda")
-from product_type import ProductType
-import rest
+"""
+licdata/rest/infrastructure/aws_lambda/product_types/common.py
 
+This file provides some methods used by product type-related handlers.
 
-def retrieve_pk(body, event):
+Copyright (C) 2023-today ACM S.L. Licdata
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+from domain.product_type import ProductType
+import infrastructure.aws_lambda.rest
+
+from typing import Dict
+
+def retrieve_pk(body: Dict, event) -> Dict:
+    """
+    Retrieves the product type's primary key from given body/event.
+    :param body: The body.
+    :type body: Dict
+    :param event: The AWS Lambda event.
+    :type event: event
+    :return: The primary key.
+    :rtype: Dict
+    """
     return rest.retrieve_attributes_from_params(body, event, ProductType.primary_key())
 
 
-def retrieve_attributes(body, event):
+def retrieve_attributes(body: Dict, event) -> Dict:
+    """
+    Retrieves the product type's attributes from given body/event.
+    :param body: The body.
+    :type body: Dict
+    :param event: The AWS Lambda event.
+    :type event: event
+    :return: The primary key.
+    :rtype: Dict
+    """
     return rest.retrieve_attributes_from_params(body, event, ProductType.attributes())
