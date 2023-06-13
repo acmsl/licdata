@@ -66,16 +66,16 @@
               inherit description license homepage maintainers;
             };
           };
-        licdata-server-0_0_1a2-for = { pythoneda-base
+        licdata-server-0_0_1a3-for = { pythoneda-base
           , pythoneda-infrastructure-base, pythoneda-application-base, python }:
           licdata-server-for {
-            version = "0.0.1a2";
+            version = "0.0.1a3";
             inherit pythoneda-base pythoneda-infrastructure-base
               pythoneda-application-base python;
           };
       in rec {
         packages = rec {
-          licdata-server-0_0_1a2-python38 = licdata-server-0_0_1a2-for {
+          licdata-server-0_0_1a3-python38 = licdata-server-0_0_1a3-for {
             pythoneda-base =
               pythoneda-base.packages.${system}.pythoneda-base-latest-python38;
             pythoneda-infrastructure-base =
@@ -84,7 +84,7 @@
               pythoneda-application-base.packages.${system}.pythoneda-application-base-latest-python38;
             python = pkgs.python38;
           };
-          licdata-server-0_0_1a2-python39 = licdata-server-0_0_1a2-for {
+          licdata-server-0_0_1a3-python39 = licdata-server-0_0_1a3-for {
             pythoneda-base =
               pythoneda-base.packages.${system}.pythoneda-base-latest-python38;
             pythoneda-infrastructure-base =
@@ -93,7 +93,7 @@
               pythoneda-application-base.packages.${system}.pythoneda-application-base-latest-python38;
             python = pkgs.python38;
           };
-          licdata-server-0_0_1a2-python310 = licdata-server-0_0_1a2-for {
+          licdata-server-0_0_1a3-python310 = licdata-server-0_0_1a3-for {
             pythoneda-base =
               pythoneda-base.packages.${system}.pythoneda-base-latest-python310;
             pythoneda-infrastructure-base =
@@ -102,32 +102,32 @@
               pythoneda-application-base.packages.${system}.pythoneda-application-base-latest-python310;
             python = pkgs.python310;
           };
-          licdata-server-latest-python38 = licdata-server-0_0_1a2-python38;
-          licdata-server-latest-python39 = licdata-server-0_0_1a2-python39;
-          licdata-server-latest-python310 = licdata-server-0_0_1a2-python310;
+          licdata-server-latest-python38 = licdata-server-0_0_1a3-python38;
+          licdata-server-latest-python39 = licdata-server-0_0_1a3-python39;
+          licdata-server-latest-python310 = licdata-server-0_0_1a3-python310;
           licdata-server-latest = licdata-server-latest-python310;
           default = licdata-server-latest;
         };
         defaultPackage = packages.default;
         devShells = rec {
-          licdata-server-0_0_1a2-python38 = shared.devShell-for {
-            package = packages.licdata-server-0_0_1a2-python38;
+          licdata-server-0_0_1a3-python38 = shared.devShell-for {
+            package = packages.licdata-server-0_0_1a3-python38;
             python = pkgs.python38;
             inherit pkgs nixpkgsRelease;
           };
-          licdata-server-0_0_1a2-python39 = shared.devShell-for {
-            package = packages.licdata-server-0_0_1a2-python39;
+          licdata-server-0_0_1a3-python39 = shared.devShell-for {
+            package = packages.licdata-server-0_0_1a3-python39;
             python = pkgs.python39;
             inherit pkgs nixpkgsRelease;
           };
-          licdata-server-0_0_1a2-python310 = shared.devShell-for {
-            package = packages.licdata-server-0_0_1a2-python310;
+          licdata-server-0_0_1a3-python310 = shared.devShell-for {
+            package = packages.licdata-server-0_0_1a3-python310;
             python = pkgs.python310;
             inherit pkgs nixpkgsRelease;
           };
-          licdata-server-latest-python38 = licdata-server-0_0_1a2-python38;
-          licdata-server-latest-python39 = licdata-server-0_0_1a2-python39;
-          licdata-server-latest-python310 = licdata-server-0_0_1a2-python310;
+          licdata-server-latest-python38 = licdata-server-0_0_1a3-python38;
+          licdata-server-latest-python39 = licdata-server-0_0_1a3-python39;
+          licdata-server-latest-python310 = licdata-server-0_0_1a3-python310;
           licdata-server-latest = licdata-server-latest-python310;
           default = licdata-server-latest;
         };
