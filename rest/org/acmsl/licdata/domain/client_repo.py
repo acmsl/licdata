@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 from org.acmsl.licdata.domain.client import Client
-from pyhoneda.repo import Repo
+from pythoneda.shared import Repo
 
 
 class ClientRepo(Repo):

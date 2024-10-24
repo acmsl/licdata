@@ -19,13 +19,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from pythoneda import Repo
+from pythoneda.shared import Repo
 
-from params import load_body, retrieve_param, retrieve_id
-from resp import build_response
+from .params import load_body, retrieve_param, retrieve_id
+from .resp import build_response
 import inspect
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, Callable, List
 
 
 def retrieve_attributes_from_params(body: Dict, event, attributeNames: List) -> Dict:

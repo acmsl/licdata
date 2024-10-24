@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/pcs/>.
 """
 
 from org.acmsl.licdata.domain import Pc
-from pyhoneda import Repo
+from pythoneda.shared import Repo
 
 
 class PcRepo(Repo):

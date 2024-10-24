@@ -19,8 +19,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from pythoneda import Entity
-from pythoneda.value_object import primary_key_attribute, attribute
+from pythoneda.shared import (
+    Entity,
+    primary_key_attribute,
+    attribute,
+    filter_attribute,
+    sensitive,
+)
 
 
 class User(Entity):
@@ -70,7 +75,7 @@ class User(Entity):
         self._email = newValue
 
     @property
-    @encrypted_attribute
+    @sensitive
     def password(self) -> str:
         """
         Retrieves the password.

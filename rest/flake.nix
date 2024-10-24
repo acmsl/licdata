@@ -1,8 +1,8 @@
 # flake.nix
 #
-# This file packages licdata-iac as a Nix flake.
+# This file packages licdata as a Nix flake.
 #
-# Copyright (C) 2024-today acm-sl's licdata-iac
+# Copyright (C) 2024-today acm-sl's licdata
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 {
-  description = "IaC for licdata";
+  description = "Licdata";
   inputs = rec {
     nixos.url = "github:NixOS/nixpkgs/24.05";
     flake-utils.url = "github:numtide/flake-utils/v1.0.0";
@@ -66,17 +66,17 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         org = "acmsl";
-        repo = "licdata-iac";
+        repo = "licdata";
         version = "0.0.1";
-        sha256 = "sha256-b6tZiyHxP8iGmGO4ZSX1XM6k3KqUDjp3SRC8XmLXEr8=";
+        sha256 = "";
         # org = "pythoneda-shared-pythonlang";
         # repo = "application";
         # version = "0.0.46";
         # sha256 = "095gsw39aclg40r4zjywil1m50yqc9nl7z761089ncj4p0lpznvh";
         pname = "${org}-${repo}";
-        pythonpackage = "org.acmsl.licdata.iac";
+        pythonpackage = "org.acmsl.licdata";
         pkgs = import nixos { inherit system; };
-        description = "IaC for licdata";
+        description = "Licdata";
         license = pkgs.lib.licenses.gpl3;
         homepage = "https://github.com/${org}/${repo}";
         maintainers = [ "rydnr <github@acm-sl.org>" ];
@@ -87,7 +87,7 @@
         nixpkgsRelease =
           builtins.replaceStrings [ "\n" ] [ "" ] "nixos-${nixosVersion}";
         shared = import "${pythoneda-shared-pythonlang-banner}/nix/shared.nix";
-        licdata-iac-for = { python
+        licdata-for = { python
           , pythoneda-shared-artifact-shared, pythoneda-shared-pythonlang-banner
           , pythoneda-shared-pythonlang-domain
           , pythoneda-shared-pythonlang-infrastructure
@@ -126,11 +126,7 @@
               pulumiAzureNative = python.pkgs.pulumi-azure-native.version;
               src = pyprojectTemplateFile;
             };
-            src = pkgs.fetchFromGitHub {
-              owner = org;
-              rev = version;
-              inherit repo sha256;
-            };
+            src = ./.;
 
             format = "pyproject";
 
@@ -173,18 +169,16 @@
       in rec {
         defaultPackage = packages.default;
         devShells = rec {
-          default = licdata-iac-default;
-          licdata-iac-default =
-            licdata-iac-python311;
-          licdata-iac-python38 =
+          default = licdata-default;
+          licdata-default = licdata-python311;
+          licdata-python38 =
             shared.devShell-for {
               banner = "${
                   pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python38
                 }/bin/banner.sh";
               extra-namespaces = "";
               nixpkgs-release = nixpkgsRelease;
-              package =
-                packages.licdata-iac-python38;
+              package = packages.licdata-python38;
               python = pkgs.python38;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python38;
@@ -192,7 +186,7 @@
                 pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python38;
               inherit archRole layer org pkgs repo space;
             };
-          licdata-iac-python39 =
+          licdata-python39 =
             shared.devShell-for {
               banner = "${
                   pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python39
@@ -200,7 +194,7 @@
               extra-namespaces = "";
               nixpkgs-release = nixpkgsRelease;
               package =
-                packages.licdata-iac-python39;
+                packages.licdata-python39;
               python = pkgs.python39;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python39;
@@ -208,7 +202,7 @@
                 pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python39;
               inherit archRole layer org pkgs repo space;
             };
-          licdata-iac-python310 =
+          licdata-python310 =
             shared.devShell-for {
               banner = "${
                   pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python310
@@ -216,7 +210,7 @@
               extra-namespaces = "";
               nixpkgs-release = nixpkgsRelease;
               package =
-                packages.licdata-iac-python310;
+                packages.licdata-python310;
               python = pkgs.python310;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python310;
@@ -224,7 +218,7 @@
                 pythoneda-shared-pythonlang-domain.packages.${system}.pythoneda-shared-pythonlang-domain-python310;
               inherit archRole layer org pkgs repo space;
             };
-          licdata-iac-python311 =
+          licdata-python311 =
             shared.devShell-for {
               banner = "${
                   pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python311
@@ -232,7 +226,7 @@
               extra-namespaces = "";
               nixpkgs-release = nixpkgsRelease;
               package =
-                packages.licdata-iac-python311;
+                packages.licdata-python311;
               python = pkgs.python311;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python311;
@@ -242,11 +236,11 @@
             };
         };
         packages = rec {
-          default = licdata-iac-default;
-          licdata-iac-default =
-            licdata-iac-python311;
-          licdata-iac-python38 =
-            pythoneda-licdata-iac-for {
+          default = licdata-default;
+          licdata-default =
+            licdata-python311;
+          licdata-python38 =
+            pythoneda-licdata-for {
               python = pkgs.python38;
               pythoneda-shared-artifact-shared =
                 pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python38;
@@ -259,8 +253,8 @@
               pythoneda-shared-pythonlang-application =
                 pythoneda-shared-pythonlang-application.packages.${system}.pythoneda-shared-pythonlang-application-python38;
             };
-          licdata-iac-python39 =
-            licdata-iac-for {
+          licdata-python39 =
+            licdata-for {
               python = pkgs.python39;
               pythoneda-shared-artifact-shared =
                 pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python39;
@@ -273,8 +267,8 @@
               pythoneda-shared-pythonlang-application =
                 pythoneda-shared-pythonlang-application.packages.${system}.pythoneda-shared-pythonlang-application-python39;
             };
-          licdata-iac-python310 =
-            licdata-iac-for {
+          licdata-python310 =
+            licdata-for {
               python = pkgs.python310;
               pythoneda-shared-artifact-shared =
                 pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python310;
@@ -287,8 +281,8 @@
               pythoneda-shared-pythonlang-application =
                 pythoneda-shared-pythonlang-application.packages.${system}.pythoneda-shared-pythonlang-application-python310;
             };
-          licdata-iac-python311 =
-            licdata-iac-for {
+          licdata-python311 =
+            licdata-for {
               python = pkgs.python311;
               pythoneda-shared-artifact-shared =
                 pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python311;

@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 from org.acmsl.licdata.domain import Order
-from pyhoneda import Repo
+from pythoneda.shared import Repo
 
 
 class OrderRepo(Repo):

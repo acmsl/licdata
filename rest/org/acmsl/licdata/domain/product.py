@@ -19,8 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from pythoneda import Entity
-from pythoneda.value_object import primary_key_attribute, attribute
+from pythoneda.shared import Entity, primary_key_attribute, attribute
 
 
 class Product(Entity):
