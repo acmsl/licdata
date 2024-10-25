@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8
 """
-org/acmsl/licdata/iac/__init__.py
+org/acmsl/licdata/iac/azure/__init__.py
 
-This file ensures org.acmsl.licdata.iac is a package.
+This file ensures org.acmsl.licdata.iac.azure is a package.
 
 Copyright (C) 2024-today acm-sl's licdata
 
@@ -21,11 +21,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
+from .resource_group import ResourceGroup
+from .cosmosdb_account import CosmosdbAccount
+from .cosmosdb_database import CosmosdbDatabase
+from .cosmosdb_container import CosmosdbContainer
+from .storage_account import StorageAccount
+from .databases_storage_account import DatabasesStorageAccount
+from .sessions_table import SessionsTable
+from .app_service_plan import AppServicePlan
+from .function_app import FunctionApp
+from .function_storage_account import FunctionStorageAccount
+from .api_management_service import ApiManagementService
+from .api import Api
+from .public_ip_address import PublicIpAddress
+from .dns_zone import DnsZone
+from .dns_record import DnsRecord
+from .security_group import SecurityGroup
+
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et
-# Local Variables:
-# mode: python
-# python-indent-offset: 4
-# tab-width: 4
-# indent-tabs-mode: nil
-# fill-column: 79
-# End:
