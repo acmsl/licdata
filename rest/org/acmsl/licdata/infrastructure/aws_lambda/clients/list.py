@@ -18,12 +18,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 from org.acmsl.licdata.application import Licdata
 from org.acmsl.licdata.domain import ClientRepo
 import org.acmsl.licdata.infrastructure.aws_lambda.clients.common
 import org.acmsl.licdata.infrastructure.aws_lambda.rest
 
 from typing import Dict
+
 
 def handler(event, context) -> Dict:
     """
@@ -35,4 +37,4 @@ def handler(event, context) -> Dict:
     :return: The response.
     :rtype: Dict
     """
-    return rest.list(event, context, Licdata.instance()..get_repo(ClientRepo))
+    return rest.list(event, context, Licdata.instance().get_repo(ClientRepo))

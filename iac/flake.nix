@@ -74,7 +74,7 @@
         # version = "0.0.46";
         # sha256 = "095gsw39aclg40r4zjywil1m50yqc9nl7z761089ncj4p0lpznvh";
         pname = "${org}-${repo}";
-        pythonpackage = "org.acmsl.licdata";
+        pythonpackage = "org.acmsl.licdata.iac";
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
         pkgs = import nixos { inherit system; };
         description = "Licdata IaC";
@@ -192,6 +192,7 @@
                 --replace "@PYTHONEDA_EXTRA_NAMESPACES@" "org" \
                 --replace "@PYTHONPATH@" "$PYTHONPATH" \
                 --replace "@CUSTOM_CONTENT@" "" \
+                --replace "@pythoneda_shared_pythonlang_domain@" "${pythoneda-shared-pythonlang-domain}" \
                 --replace "@ENTRYPOINT@" "$out/lib/python${pythonMajorMinorVersion}/site-packages/${package}/application/${entrypoint}.py" \
                 --replace "@BANNER@" "$out/bin/banner.sh"
             '';
@@ -204,7 +205,7 @@
                 fi
               done
               popd
-              mkdir $out/dist
+              mkdir $out/dist $out/bin
               cp dist/${wheelName} $out/dist
               cp /build/$sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
               chmod +x $out/bin/${entrypoint}.sh
