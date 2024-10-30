@@ -44,11 +44,13 @@ class StackFactory(Port, BaseObject):
         super().__init__()
 
     @abc.abstractmethod
-    def new(self, name: str) -> Stack:
+    def new(self, stackName: str, projectName: str) -> Stack:
         """
         Creates a new stack.
-        :param name: The stack name.
-        :type name: str
+        :param stackName: The stack name.
+        :type stackName: str
+        :param projectName: The project name.
+        :type projectName: str
         """
         pass
 

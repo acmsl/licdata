@@ -51,6 +51,10 @@ class StorageAccount(abc.ABC):
         self._storage_account = self.create_storage_account(
             name, resourceGroup, "StorageV2"
         )
+        pulumi.export(
+            f"function_storage_account.{resourceGroup.name}",
+            self._storage_account.name,
+        )
 
     @property
     def storage_account(self) -> pulumi_azure_native.storage.StorageAccount:
@@ -85,6 +89,14 @@ class StorageAccount(abc.ABC):
             sku=pulumi_azure_native.storage.SkuArgs(name="Standard_LRS"),
             kind=kind,
         )
+
+    def __getattr__(self, attr):
+        """
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
+        """
+        return getattr(self._storage_account, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

@@ -45,7 +45,7 @@ class DnsRecord:
     ):
         """
         Creates a new Azure instance.
-        :param publicIp: The PublicIPAddress.
+        :param publicIp: The public IP address. Optional.
         :type publicIp: pulumi_azure_native.network.PublicIPAddress
         :param dnsZone: The Zone.
         :type dnsZone: pulumi_azure_native.network.Zone
@@ -53,14 +53,16 @@ class DnsRecord:
         :type resourceGroup: pulumi_azure_native.resources.ResourceGroup
         """
         super().__init__()
+
         self._dns_record = self.create_dns_record(
-            "apiDns",
+            "api",
             dnsZone,
             resourceGroup,
             "A",
             300,
             [pulumi_azure_native.network.ARecordArgs(ipv4_address=publicIp.ip_address)],
         )
+        pulumi.export(f"api.{resourceGroup.name}", self.dns_record.name)
 
     @property
     def dns_record(self) -> pulumi_azure_native.network.RecordSet:
@@ -78,7 +80,7 @@ class DnsRecord:
         resourceGroup: pulumi_azure_native.resources.ResourceGroup,
         recordType: str,
         ttl: int,
-        records: List[str],
+        ipAddress: str,
     ) -> pulumi_azure_native.network.RecordSet:
         """
         Creates an A record.
@@ -92,8 +94,8 @@ class DnsRecord:
         :type recordType: str
         :param ttl: The TTL.
         :type ttl: int
-        :param records: The records.
-        :type records: List[str]
+        :param ipAddress: The IP address.
+        :type ipAddress: str
         :return: The A record.
         :rtype: pulumi_azure_native.network.RecordSet
         """
@@ -104,14 +106,16 @@ class DnsRecord:
             record_type=recordType,
             relative_record_set_name=name,
             ttl=ttl,
-            a_records=records,
+            a_records=[pulumi_azure_native.network.ARecordArgs(ipv4_address=ipAddress)],
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("dns_record", self.dns_record.name)
+        return getattr(self._dns_record, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

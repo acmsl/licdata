@@ -44,6 +44,7 @@ class PublicIpAddress:
         """
         super().__init__()
         self._public_ip = self.create_public_ip_address("licenses", resourceGroup)
+        pulumi.export(f"public_ip.{resourceGroup.name}", self.public_ip.name)
 
     @property
     def public_ip(self) -> pulumi_azure_native.network.PublicIPAddress:
@@ -72,11 +73,13 @@ class PublicIpAddress:
             public_ip_allocation_method="Static",
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("public_ip", self.public_ip.name)
+        return getattr(self._public_ip, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

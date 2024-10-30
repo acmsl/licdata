@@ -43,6 +43,7 @@ class ResourceGroup:
         """
         super().__init__()
         self._resource_group = self.create_resource_group("licenses")
+        pulumi.export("resource_group", self._resource_group.name)
 
     @property
     def resource_group(self) -> pulumi_azure_native.resources.ResourceGroup:
@@ -63,13 +64,17 @@ class ResourceGroup:
         :return: The Azure Resource Group.
         :rtype: pulumi_azure_native.resources.ResourceGroup
         """
-        return pulumi_azure_native.resources.ResourceGroup(resourceGroupName)
+        return pulumi_azure_native.resources.ResourceGroup(
+            resourceGroupName, location="spaincentral"
+        )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("resource_group", self.resource_group.name)
+        return getattr(self._resource_group, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

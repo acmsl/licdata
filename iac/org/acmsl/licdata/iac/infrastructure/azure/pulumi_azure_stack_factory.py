@@ -51,14 +51,15 @@ class PulumiAzureStackFactory(StackFactory):
         """
         return cls()
 
-    def new(self, name: str) -> PulumiAzureStack:
+    def new(self, stackName: str, projectName: str) -> PulumiAzureStack:
         """
         Creates a new stack.
-        :param name: The stack name.
-        :type name: str
+        :param stackName: The stack name.
+        :type stackName: str
+        :param projectName: The project name.
+        :type projectName: str
         """
-        print(f"name: {name}")
-        return PulumiAzureStack(name)
+        return PulumiAzureStack(stackName, projectName)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

@@ -55,6 +55,9 @@ class CosmosdbAccount:
             },
             self._resource_group,
         )
+        pulumi.export(
+            f"cosmosdb_account.{resourceGroup.name}", self.cosmosdb_account.name
+        )
 
     @property
     def cosmosdb_account(self) -> pulumi_azure_native.documentdb.DatabaseAccount:
@@ -105,11 +108,13 @@ class CosmosdbAccount:
             enable_free_tier=True,  # Use free tier for cost-effective setup
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("cosmosdb_account", self.cosmosdb_account.name)
+        return getattr(self._api_service_plan, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

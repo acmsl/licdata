@@ -53,6 +53,7 @@ class SessionsTable:
         self._sessions_table = self.create_table(
             "sessions", storageAccount, resourceGroup
         )
+        pulumi.export(f"sessions_table.{resourceGroup.name}", self.sessions_table.name)
 
     @property
     def sessions_table(self) -> pulumi_azure_native.storage.Table:
@@ -88,11 +89,13 @@ class SessionsTable:
             resource_group_name=resourceGroup.name,
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("sessions_table", self.sessions_table.name)
+        return getattr(self._sessions_table, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

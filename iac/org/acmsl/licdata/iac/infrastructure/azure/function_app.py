@@ -40,6 +40,7 @@ class FunctionApp:
         self,
         storageAccount: pulumi_azure_native.storage.StorageAccount,
         appServicePlan: pulumi_azure_native.web.AppServicePlan,
+        resourceGroup: pulumi_azure_native.resources.ResourceGroup,
     ):
         """
         Creates a new FunctionApp instance.
@@ -47,10 +48,17 @@ class FunctionApp:
         :type storageAccount: pulumi_azure_native.storage.StorageAccount
         :param appServicePlan: The AppServicePlan.
         :type appServicePlan: pulumi_azure_native.web.AppServicePlan
+        :param resourceGroup: The ResourceGroup.
+        :type resourceGroup: pulumi_azure_native.resources.ResourceGroup
         """
         super().__init__()
         self._function_app = self.create_function_app(
-            "licenses", appServicePlan, storageAccount
+            "licenses", appServicePlan, storageAccount, resourceGroup
+        )
+        pulumi.export(f"function_app.{resourceGroup.name}", self.function_app.name)
+        pulumi.export(
+            f"function_app_url.{storageAccount.resource_group_name}",
+            self._function_app.default_host_name.apply(lambda name: f"https://{name}"),
         )
 
     @property
@@ -67,6 +75,7 @@ class FunctionApp:
         functionName: str,
         appServicePlan: pulumi_azure_native.web.AppServicePlan,
         functionStorageAccount: pulumi_azure_native.storage.StorageAccount,
+        resourceGroup: pulumi_azure_native.resources.ResourceGroup,
     ) -> pulumi_azure_native.web.WebApp:
         """
         Creates an Azure Function App.
@@ -76,12 +85,14 @@ class FunctionApp:
         :type appServicePlan: pulumi_azure_native.web.AppServicePlan
         :param functionStorageAccount: The Storage Account.
         :type functionStorageAccount: pulumi_azure_native.storage.StorageAccount
+        :param resourceGroup: The Azure Resource Group.
+        :type resourceGroup: pulumi_azure_native.resources.ResourceGroup
         :return: The Azure Function App.
         :rtype: pulumi_azure_native.web.WebApp
         """
         return pulumi_azure_native.web.WebApp(
             functionName,
-            resource_group_name=appServicePlan.resource_group_name,
+            resource_group_name=resourceGroup.name,
             server_farm_id=appServicePlan.id,
             kind="FunctionApp",
             site_config=pulumi_azure_native.web.SiteConfigArgs(
@@ -98,11 +109,13 @@ class FunctionApp:
             client_affinity_enabled=False,
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("function_app", self.function_app.name)
+        return getattr(self._function_app, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

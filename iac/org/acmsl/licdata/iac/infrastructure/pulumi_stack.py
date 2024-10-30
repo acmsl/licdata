@@ -21,7 +21,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import abc
 from org.acmsl.licdata.iac.domain import Stack
-from pulumi.automation import LocalWorkspace, create_or_select_stack
+from pulumi import automation as auto
+from pulumi.automation.errors import CommandError
+
+
+def declare_infrastructure_wrapper_old():
+    print("In declare_infrastructure_wrapper!")
+    resource_group = azure_native.resources.ResourceGroup("sample")
+    pulumi.export("resource_group_name", resource_group.name)
 
 
 class PulumiStack(Stack, abc.ABC):
@@ -37,33 +44,50 @@ class PulumiStack(Stack, abc.ABC):
         - org.acmsl.licdata.domain.Stack
     """
 
-    def __init__(self, name: str):
+    def __init__(self, stackName: str, projectName: str):
         """
         Creates a new PulumiStack instance.
-        :param name: The name of the stack.
-        :type name: str
+        :param stackName: The name of the stack.
+        :type stackName: str
+        :param projectName: The name of the project.
+        :type projectName: str
         """
-        super().__init__(name)
-        print(f"name -> {name}, {self.name}")
+        super().__init__(stackName, projectName)
 
     async def up(self):
         """
         Brings up the stack.
         """
-        workspace = LocalWorkspace()
 
-        stack = create_or_select_stack(
-            stack_name=self.name,
-            project_name="licdata-iac",
-            program=self.create_infrastructure,
+        def declare_infrastructure_wrapper():
+            return self.declare_infrastructure()
+
+        stack = auto.create_or_select_stack(
+            stack_name=self.stack_name,
+            project_name=self.project_name,
+            program=declare_infrastructure_wrapper,
         )
 
-        outcome = await stack.up(on_output=self.__class__.logger().debug)
+        stack.workspace.install_plugin("azure-native", "v2.11.0")
+        # stack.set_config(
+        #    "azure-native:location", auto.ConfigValue(value="spaincentral")
+        # )
+        stack.refresh(on_output=self.__class__.logger().debug)
+
+        try:
+            outcome = stack.up(on_output=self.__class__.logger().debug)
+            import json
+
+            self.__class__.logger().info(
+                f"update summary: \n{json.dumps(outcome.summary.resource_changes, indent=4)}"
+            )
+        except CommandError as e:
+            self.__class__.logger().error(f"CommandError: {e}")
 
     @abc.abstractmethod
-    async def create_infrastructure(self):
+    def declare_infrastructure(self):
         """
-        Creates the infrastructure.
+        Declares the infrastructure.
         """
         pass
 

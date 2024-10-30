@@ -28,19 +28,19 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-artifact-def/shared/0.0.53";
+      url = "github:pythoneda-shared-artifact-def/shared/0.0.58";
     };
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
       inputs.flake-utils.follows = "flake-utils";
-      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.49";
+      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.53";
     };
     pythoneda-shared-pythonlang-domain = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixos.follows = "nixos";
       inputs.pythoneda-shared-pythonlang-banner.follows =
         "pythoneda-shared-pythonlang-banner";
-      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.40";
+      url = "github:pythoneda-shared-pythonlang-def/domain/0.0.53";
     };
     pythoneda-shared-pythonlang-infrastructure = {
       inputs.flake-utils.follows = "flake-utils";
@@ -49,7 +49,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.35";
+      url = "github:pythoneda-shared-pythonlang-def/infrastructure/0.0.40";
     };
     pythoneda-shared-pythonlang-application = {
       inputs.flake-utils.follows = "flake-utils";
@@ -58,7 +58,7 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-pythonlang-def/application/0.0.61";
+      url = "github:pythoneda-shared-pythonlang-def/application/0.0.67";
     };
   };
   outputs = inputs:
@@ -172,6 +172,7 @@
               pythoneda-shared-pythonlang-application
               pulumi
               pulumi-azure-native
+              debugpy
             ];
 
             # pythonImportsCheck = [ pythonpackage ];
@@ -192,8 +193,10 @@
                 --replace "@PYTHONEDA_EXTRA_NAMESPACES@" "org" \
                 --replace "@PYTHONPATH@" "$PYTHONPATH" \
                 --replace "@CUSTOM_CONTENT@" "" \
-                --replace "@pythoneda_shared_pythonlang_domain@" "${pythoneda-shared-pythonlang-domain}" \
+                --replace "@PYTHONEDA_SHARED_PYTHONLANG_DOMAIN@" "${pythoneda-shared-pythonlang-domain}" \
+                --replace "@PACKAGE@" "$out/lib/python${pythonMajorMinorVersion}/site-packages" \
                 --replace "@ENTRYPOINT@" "$out/lib/python${pythonMajorMinorVersion}/site-packages/${package}/application/${entrypoint}.py" \
+                --replace "@PYTHON_ARGS@" "-Xfrozen_modules=off" \
                 --replace "@BANNER@" "$out/bin/banner.sh"
             '';
 
@@ -270,8 +273,7 @@
               banner = "${packages.licdata-iac-python39}/bin/banner.sh";
               extra-namespaces = "org";
               nixpkgs-release = nixpkgsRelease;
-              package =
-                packages.licdata-iac-python39;
+              package = packages.licdata-iac-python39;
               python = pkgs.python39;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python39;
@@ -284,8 +286,7 @@
               banner = "${packages.licdata-iac-python310}/bin/banner.sh";
               extra-namespaces = "org";
               nixpkgs-release = nixpkgsRelease;
-              package =
-                packages.licdata-iac-python310;
+              package = packages.licdata-iac-python310;
               python = pkgs.python310;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python310;
@@ -298,8 +299,7 @@
               banner = "${packages.licdata-iac-python311}/bin/banner.sh";
               extra-namespaces = "org";
               nixpkgs-release = nixpkgsRelease;
-              package =
-                packages.licdata-iac-python311;
+              package = packages.licdata-iac-python311;
               python = pkgs.python311;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python311;

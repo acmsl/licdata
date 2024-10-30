@@ -25,6 +25,8 @@ from org.acmsl.licdata.iac.domain import LicdataIac
 from org.acmsl.licdata.iac.domain import InfrastructureUpdateRequested
 from org.acmsl.licdata.iac.infrastructure.cli import PulumiOptionsCli
 from org.acmsl.licdata.iac.infrastructure.azure import PulumiAzureStackFactory
+import pulumi
+import pulumi_azure_native as azure_native
 from typing import Dict
 
 
@@ -67,11 +69,13 @@ class LicdataIacApp(PythonEDA):
         :param options: Such options.
         :type options: Dict
         """
-        updated = await LicdataIac.listen_InfrastructureUpdateRequested(
-            InfrastructureUpdateRequested(options.get("stackName", None))
+        await LicdataIac.listen_InfrastructureUpdateRequested(
+            InfrastructureUpdateRequested(
+                options.get("stackName", None), options.get("projectName", None)
+            )
         )
-        if updated:
-            await self.emit(updated)
+        # if updated:
+        #    await self.emit(updated)
 
 
 if __name__ == "__main__":

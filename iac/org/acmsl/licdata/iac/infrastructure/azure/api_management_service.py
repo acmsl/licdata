@@ -63,11 +63,50 @@ class ApiManagementService:
         """
         return self._api_management_service
 
-    def deploy(self):
+    def create_api_managenent_service(
+        self,
+        name: str,
+        resourceGroup: pulumi_azure_native.resources.ResourceGroup,
+        email: str,
+        password: str,
+        sku: str,
+        capacity: int,
+    ) -> pulumi_azure_native.apimanagement.ApiManagementService:
         """
-        Deploys the infrastructure.
+        Creates an Azure Api Management Service.
+        :param name: The name of the service.
+        :type name: str
+        :param resourceGroup: The ResourceGroup.
+        :type resourceGroup: pulumi_azure_native.resources.ResourceGroup
+        :param email: The email of the service.
+        :type email: str
+        :param password: The password of the service.
+        :type password: str
+        :param sku: The sku of the service.
+        :type sku: str
+        :param capacity: The capacity of the service.
+        :type capacity: int
+        :return: The ApiManagementService instance.
+        :rtype: pulumi_azure_native.apimanagement.ApiManagementService
         """
-        pulumi.export("api_management_service", self.api_management_service.name)
+        return pulumi_azure_native.apimanagement.ApiManagementService(
+            name=name,
+            resource_group_id=resourceGroup.id,
+            publisher_email=email,
+            publisher_name=name,
+            sku={
+                "name": sku,
+                "capacity": capacity,
+            },
+        )
+
+    def __getattr__(self, attr):
+        """
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
+        """
+        return getattr(self._api_management_service, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

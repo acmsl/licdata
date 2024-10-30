@@ -48,6 +48,9 @@ class CosmosdbDatabase:
         self._cosmosdb_database = self.create_cosmosdb_database(
             "licenses", cosmosdbAccount
         )
+        pulumi.export(
+            f"cosmosdb_database.{resourceGroup.name}", self.cosmosdb_database.name
+        )
 
     @property
     def cosmosdb_database(
@@ -83,11 +86,13 @@ class CosmosdbDatabase:
             },
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("cosmosdb_database", self.cosmosdb_database.name)
+        return getattr(self._cosmosdb_database, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

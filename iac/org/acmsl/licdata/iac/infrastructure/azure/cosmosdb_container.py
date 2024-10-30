@@ -64,6 +64,9 @@ class CosmosdbContainer:
                 "kind": "Hash",
             },
         )
+        pulumi.export(
+            f"cosmosdb_container.{resourceGroup.name}", self.cosmosdb_container.name
+        )
 
     @property
     def cosmosdb_container(
@@ -111,11 +114,13 @@ class CosmosdbContainer:
             ),
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("cosmosdb_container", self.cosmosdb_container.name)
+        return getattr(self._cosmosdb_container, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

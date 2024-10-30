@@ -45,6 +45,9 @@ class AppServicePlan:
         """
         super().__init__()
         self._app_service_plan = self.create_app_service_plan("licenses", resourceGroup)
+        pulumi.export(
+            f"app_service_plan.{resourceGroup.name}", self.app_service_plan.name
+        )
 
     @property
     def app_service_plan(self) -> pulumi_azure_native.web.AppServicePlan:
@@ -73,14 +76,16 @@ class AppServicePlan:
             appServicePlanName,
             resource_group_name=resourceGroup.name,
             kind="FunctionApp",
-            sku=web.SkuDescriptionArgs(tier="Dynamic", name="Y1"),
+            sku=pulumi_azure_native.web.SkuDescriptionArgs(tier="Dynamic", name="Y1"),
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("app_service_plan", self.app_service_plan.name)
+        return getattr(self._app_service_plan, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

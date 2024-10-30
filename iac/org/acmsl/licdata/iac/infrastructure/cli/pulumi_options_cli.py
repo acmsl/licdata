@@ -76,7 +76,13 @@ class PulumiOptionsCli(CliHandler, PrimaryPort):
             "-s",
             "--stack",
             required=False,
-            help="The stack",
+            help="The name of the stack",
+        )
+        parser.add_argument(
+            "-p",
+            "--project",
+            required=False,
+            help="The name of the project",
         )
 
     async def handle(self, app: PythonEDA, args):
@@ -88,9 +94,7 @@ class PulumiOptionsCli(CliHandler, PrimaryPort):
         :type args: argparse.args
         """
         await app.accept_pulumi_options(
-            {
-                "stackName": args.stack,
-            }
+            {"stackName": args.stack, "projectName": args.project}
         )
 
 

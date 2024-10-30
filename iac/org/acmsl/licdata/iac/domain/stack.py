@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import abc
-from pythoneda.shared import BaseObject, Port
+from pythoneda.shared import BaseObject, Port, primary_key_attribute
 
 
 class Stack(Port, BaseObject):
@@ -36,23 +36,37 @@ class Stack(Port, BaseObject):
         - org.acmsl.licdata.domain.LicdataIac
     """
 
-    def __init__(self, name: str):
+    def __init__(self, stackName: str, projectName: str):
         """
         Creates a new stack instance.
-        :param name: The name of the stack.
-        :type name: str
+        :param stackName: The name of the stack.
+        :type stackName: str
+        :param projectName: The name of the project.
+        :type projectName: str
         """
         super().__init__()
-        self._name = name
+        self._stack_name = stackName
+        self._project_name = projectName
 
     @property
-    def name(self) -> str:
+    @primary_key_attribute
+    def stack_name(self) -> str:
         """
         Retrieves the stack name.
         :return: The name of the stack.
         :rtype: str
         """
-        return self._name
+        return self._stack_name
+
+    @property
+    @primary_key_attribute
+    def project_name(self) -> str:
+        """
+        Retrieves the project name.
+        :return: The name of the project.
+        :rtype: str
+        """
+        return self._project_name
 
     @abc.abstractmethod
     async def up(self):

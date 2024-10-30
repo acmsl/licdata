@@ -45,11 +45,5 @@ class DatabasesStorageAccount(StorageAccount):
         """
         super().__init__("databases", resourceGroup)
 
-    def deploy(self):
-        """
-        Deploys the infrastructure.
-        """
-        pulumi.export("storage_account", self.storage_account.name)
-
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

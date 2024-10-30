@@ -98,11 +98,13 @@ class Api:
             display_name=displayName,
         )
 
-    def deploy(self):
-        """
-        Deploys the infrastructure.
-        """
-        pulumi.export("api", self.api.name)
+        def __getattr__(self, attr):
+            """
+            Delegates attribute/method lookup to the wrapped instance.
+            :param attr: The attribute.
+            :type attr: Any
+            """
+            return getattr(self._api, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

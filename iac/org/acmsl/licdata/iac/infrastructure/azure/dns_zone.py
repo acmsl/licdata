@@ -46,6 +46,7 @@ class DnsZone:
         self._dns_zone = self.create_dns_zone(
             "licenses", "licenses.acmsl.org", resourceGroup
         )
+        pulumi.export(f"dns_zone.{resourceGroup.name}", self.dns_zone.name)
 
     @property
     def dns_zone(self) -> pulumi_azure_native.network.Zone:
@@ -78,13 +79,16 @@ class DnsZone:
             resource_group_name=resourceGroup.name,
             zone_type="Public",
             zone_name=domainName,
+            location="global",
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("dns_zone", self.dns_zone.name)
+        return getattr(self._dns_zone, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

@@ -59,22 +59,40 @@ class LicdataIac(EventListener):
     @classmethod
     @listen(InfrastructureUpdateRequested)
     async def listen_InfrastructureUpdateRequested(
-        self, event: InfrastructureUpdateRequested
+        cls, event: InfrastructureUpdateRequested
     ) -> InfrastructureUpdated:
         """
         Gets notified of a InfrastructureUpdateRequested event.
         :param event: The event.
         :type event: org.acmsl.licdata.iac.domain.InfrastructureUpdateRequested
         """
-        print("InfrastructureUpdateRequested event received")
-        factory = Ports.instance().resolve_first(StackFactory)
-        stack = factory.new("dev")  # event.stack_name)
+        print(
+            f"InfrastructureUpdateRequested event received: {event.stack_name}, {event.project_name}"
+        )
+        await cls.update_infrastructure(event.stack_name, event.project_name)
+
+    @classmethod
+    async def update_infrastructure(cls, stackName: str, projectName: str):
+        """
+        Updates the infrastructure.
+        :param stackName: The name of the stack.
+        :type stackName: str
+        :param projectName: The name of the project.
+        :type projectName: str
+        """
+        # factory = Ports.instance().resolve_first(StackFactory)
+        from org.acmsl.licdata.iac.infrastructure.azure import PulumiAzureStackFactory
+
+        factory = PulumiAzureStackFactory()
+        print(factory)
+        stack = factory.new(stackName, projectName)
+        # from org.acmsl.licdata.iac.infrastructure.azure import PulumiAzureStack
+
+        # stack = PulumiAzureStack(stackName, projectName)
+        print(f"stack: {stack}")
         await stack.up()
 
 
-if __name__ == "__main__":
-    asyncio.run(LicdataIacApp.main("org.acmsl.licdata.iac.application.LicdataIacApp"))
-# vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et
 # Local Variables:
 # mode: python
 # python-indent-offset: 4

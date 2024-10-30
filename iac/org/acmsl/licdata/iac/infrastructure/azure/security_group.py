@@ -49,6 +49,7 @@ class SecurityGroup:
             resourceGroup,
             self.create_security_rule_args_for_accessing_cosmosdb(),
         )
+        pulumi.export(f"security_group.{resourceGroup.name}", self.security_group.name)
 
     @property
     def security_group(self) -> pulumi_azure_native.network.NetworkSecurityGroup:
@@ -91,11 +92,13 @@ class SecurityGroup:
             security_rules=securityRuleArgs,
         )
 
-    def deploy(self):
+    def __getattr__(self, attr):
         """
-        Deploys the infrastructure.
+        Delegates attribute/method lookup to the wrapped instance.
+        :param attr: The attribute.
+        :type attr: Any
         """
-        pulumi.export("security_group", self.security_group.name)
+        return getattr(self._security_group, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et
