@@ -51,6 +51,9 @@ class ApiManagementService:
             "Consumption",
             0,
         )
+        self._api_management_service.name.apply(
+            lambda name: pulumi.export(f"api_management_service", name)
+        )
 
     @property
     def api_management_service(

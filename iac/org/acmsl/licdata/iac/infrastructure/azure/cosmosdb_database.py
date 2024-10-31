@@ -48,8 +48,8 @@ class CosmosdbDatabase:
         self._cosmosdb_database = self.create_cosmosdb_database(
             "licenses", cosmosdbAccount
         )
-        pulumi.export(
-            f"cosmosdb_database.{resourceGroup.name}", self.cosmosdb_database.name
+        self._cosmosdb_database.name.apply(
+            lambda name: pulumi.export("cosmosdb_database", name)
         )
 
     @property

@@ -43,7 +43,9 @@ class ResourceGroup:
         """
         super().__init__()
         self._resource_group = self.create_resource_group("licenses")
-        pulumi.export("resource_group", self._resource_group.name)
+        self._resource_group.name.apply(
+            lambda name: pulumi.export("resource_group", name)
+        )
 
     @property
     def resource_group(self) -> pulumi_azure_native.resources.ResourceGroup:
@@ -65,7 +67,7 @@ class ResourceGroup:
         :rtype: pulumi_azure_native.resources.ResourceGroup
         """
         return pulumi_azure_native.resources.ResourceGroup(
-            resourceGroupName, location="spaincentral"
+            resourceGroupName, location="westeurope"
         )
 
     def __getattr__(self, attr):

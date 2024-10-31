@@ -33,7 +33,7 @@
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
       inputs.flake-utils.follows = "flake-utils";
-      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.53";
+      url = "github:pythoneda-shared-pythonlang-def/banner/0.0.56";
     };
     pythoneda-shared-pythonlang-domain = {
       inputs.flake-utils.follows = "flake-utils";
@@ -159,11 +159,11 @@
                 pythoneda-shared-pythonlang-domain;
               src = entrypointTemplateFile;
             };
-            src = ./.;
+            src = ./..;
 
             format = "pyproject";
 
-            nativeBuildInputs = with python.pkgs; [ pip poetry-core ];
+            nativeBuildInputs = with python.pkgs; [ pip poetry-core ] ++ [ pkgs.zip ];
             propagatedBuildInputs = with python.pkgs; [
               pythoneda-shared-artifact-shared
               pythoneda-shared-pythonlang-banner
@@ -178,17 +178,21 @@
             # pythonImportsCheck = [ pythonpackage ];
 
             unpackPhase = ''
-              cp -r ${src} .
-              sourceRoot=$(ls | grep -v env-vars)
+              cp -r ${src}/iac .
+              sourceRoot=$(realpath iac)
               chmod +w $sourceRoot
               find $sourceRoot -type d -exec chmod 777 {} \;
               cp ${pyprojectTemplate} $sourceRoot/pyproject.toml
               cp ${bannerTemplate} $sourceRoot/${banner_file}
               cp ${entrypointTemplate} $sourceRoot/entrypoint.sh
+              pushd ${src}/rest
+              echo "zip -r $sourceRoot/rest.zip org"
+              zip -r $sourceRoot/rest.zip org
+              popd
             '';
 
             postPatch = ''
-              substituteInPlace /build/$sourceRoot/entrypoint.sh \
+              substituteInPlace $sourceRoot/entrypoint.sh \
                 --replace "@SOURCE@" "$out/bin/${entrypoint}.sh" \
                 --replace "@PYTHONEDA_EXTRA_NAMESPACES@" "org" \
                 --replace "@PYTHONPATH@" "$PYTHONPATH" \
@@ -201,7 +205,7 @@
             '';
 
             postInstall = ''
-              pushd /build/$sourceRoot
+              pushd $sourceRoot
               for f in $(find . -name '__init__.py'); do
                 if [[ ! -e $out/lib/python${pythonMajorMinorVersion}/site-packages/$f ]]; then
                   cp $f $out/lib/python${pythonMajorMinorVersion}/site-packages/$f;
@@ -210,13 +214,15 @@
               popd
               mkdir $out/dist $out/bin
               cp dist/${wheelName} $out/dist
-              cp /build/$sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
+              cp $sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
               chmod +x $out/bin/${entrypoint}.sh
-              cp -r /build/$sourceRoot/templates $out/lib/python${pythonMajorMinorVersion}/site-packages
+              cp -r $sourceRoot/rest.zip $sourceRoot/templates $out/lib/python${pythonMajorMinorVersion}/site-packages
               echo '#!/usr/bin/env sh' > $out/bin/banner.sh
               echo "export PYTHONPATH=$PYTHONPATH" >> $out/bin/banner.sh
               echo "echo 'Running $out/bin/banner'" >> $out/bin/banner.sh
-              echo "${python}/bin/python $out/lib/python${pythonMajorMinorVersion}/site-packages/${banner_file} \$@" >> $out/bin/banner.sh
+              echo "pushd $out/lib/python${pythonMajorMinorVersion}/site-packages" >> $out/bin/banner.sh
+              echo "${python}/bin/python ${banner_file} \$@" >> $out/bin/banner.sh
+              echo "popd" >> $out/bin/banner.sh
               chmod +x $out/bin/banner.sh
             '';
 

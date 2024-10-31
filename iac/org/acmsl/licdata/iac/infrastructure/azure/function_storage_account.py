@@ -44,6 +44,9 @@ class FunctionStorageAccount(StorageAccount):
         :type resourceGroup: pulumi_azure_native.resources.ResourceGroup
         """
         super().__init__("functions", resourceGroup)
+        self.storage_account.name.apply(
+            lambda name: pulumi.export(f"function_storage_account", name)
+        )
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

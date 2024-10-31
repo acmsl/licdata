@@ -43,17 +43,21 @@ class PublicIpAddress:
         :type resourceGroup: pulumi_azure_native.resources.ResourceGroup
         """
         super().__init__()
-        self._public_ip = self.create_public_ip_address("licenses", resourceGroup)
-        pulumi.export(f"public_ip.{resourceGroup.name}", self.public_ip.name)
+        self._public_ip_address = self.create_public_ip_address(
+            "licenses", resourceGroup
+        )
+        self._public_ip_address.ip_address.apply(
+            lambda ip: pulumi.export("public_ip_address", ip)
+        )
 
     @property
-    def public_ip(self) -> pulumi_azure_native.network.PublicIPAddress:
+    def public_ip_address(self) -> pulumi_azure_native.network.PublicIPAddress:
         """
         Retrieves the public IP address.
         :return: Such public IP address.
         :rtype: pulumi_azure_native.network.PublicIPAddress
         """
-        return self._public_ip
+        return self._public_ip_address
 
     def create_public_ip_address(
         self, name: str, resourceGroup: pulumi_azure_native.resources.ResourceGroup
@@ -71,6 +75,7 @@ class PublicIpAddress:
             name,
             resource_group_name=resourceGroup.name,
             public_ip_allocation_method="Static",
+            sku=pulumi_azure_native.network.PublicIPAddressSkuArgs(name="Standard"),
         )
 
     def __getattr__(self, attr):
@@ -79,7 +84,7 @@ class PublicIpAddress:
         :param attr: The attribute.
         :type attr: Any
         """
-        return getattr(self._public_ip, attr)
+        return getattr(self._public_ip_address, attr)
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

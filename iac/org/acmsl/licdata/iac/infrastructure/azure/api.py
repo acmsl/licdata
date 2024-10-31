@@ -56,6 +56,7 @@ class Api:
             "licenses",
             "Licenses API",
         )
+        self._api.name.apply(lambda name: pulumi.export("api", name))
 
     @property
     def api(self) -> pulumi_azure_native.apimanagement.Api:

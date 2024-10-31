@@ -39,14 +39,14 @@ class DnsRecord:
 
     def __init__(
         self,
-        publicIp: pulumi_azure_native.network.PublicIPAddress,
+        publicIpAddress: pulumi_azure_native.network.PublicIPAddress,
         dnsZone: pulumi_azure_native.network.Zone,
         resourceGroup: pulumi_azure_native.resources.ResourceGroup,
     ):
         """
         Creates a new Azure instance.
-        :param publicIp: The public IP address. Optional.
-        :type publicIp: pulumi_azure_native.network.PublicIPAddress
+        :param publicIpAddress: The public IP address.
+        :type publicIpAddress: pulumi_azure_native.network.PublicIPAddress
         :param dnsZone: The Zone.
         :type dnsZone: pulumi_azure_native.network.Zone
         :param resourceGroup: The ResourceGroup.
@@ -55,14 +55,9 @@ class DnsRecord:
         super().__init__()
 
         self._dns_record = self.create_dns_record(
-            "api",
-            dnsZone,
-            resourceGroup,
-            "A",
-            300,
-            [pulumi_azure_native.network.ARecordArgs(ipv4_address=publicIp.ip_address)],
+            "api", dnsZone, resourceGroup, "A", 3600, publicIpAddress.ip_address
         )
-        pulumi.export(f"api.{resourceGroup.name}", self.dns_record.name)
+        self._dns_record.name.apply(lambda name: pulumi.export("dns_record", name))
 
     @property
     def dns_record(self) -> pulumi_azure_native.network.RecordSet:
@@ -100,7 +95,7 @@ class DnsRecord:
         :rtype: pulumi_azure_native.network.RecordSet
         """
         return pulumi_azure_native.network.RecordSet(
-            name,
+            resource_name=name,
             zone_name=zone.name,
             resource_group_name=resourceGroup.name,
             record_type=recordType,

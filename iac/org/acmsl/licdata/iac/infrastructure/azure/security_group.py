@@ -49,7 +49,9 @@ class SecurityGroup:
             resourceGroup,
             self.create_security_rule_args_for_accessing_cosmosdb(),
         )
-        pulumi.export(f"security_group.{resourceGroup.name}", self.security_group.name)
+        self._security_group.name.apply(
+            lambda name: pulumi.export("security_group", name)
+        )
 
     @property
     def security_group(self) -> pulumi_azure_native.network.NetworkSecurityGroup:

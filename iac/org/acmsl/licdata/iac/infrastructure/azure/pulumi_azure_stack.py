@@ -24,8 +24,11 @@ from .resource_group import ResourceGroup
 from .function_storage_account import FunctionStorageAccount
 from .app_service_plan import AppServicePlan
 from .function_app import FunctionApp
+from .public_ip_address import PublicIpAddress
 from .dns_zone import DnsZone
 from .dns_record import DnsRecord
+from .blob_container import BlobContainer
+from .functions_package import FunctionsPackage
 from .front_door import FrontDoor
 from .frontend_endpoint import FrontendEndpoint
 
@@ -56,10 +59,11 @@ class PulumiAzureStack(PulumiStack):
         self._function_storage_account = None
         self._app_service_plan = None
         self._function_app = None
+        self._public_ip_address = None
         self._dns_zone = None
         self._dns_record = None
-        self._front_door = None
-        self._frontend_endpoint = None
+        self._blob_container = None
+        self._functions_package = None
 
     @classmethod
     def instantiate(cls):
@@ -107,6 +111,15 @@ class PulumiAzureStack(PulumiStack):
         return self._function_app
 
     @property
+    def public_ip_address(self) -> PublicIpAddress:
+        """
+        Retrieves the Azure Public IP Address.
+        :return: Such Public IP Address.
+        :rtype: PublicIpAddress
+        """
+        return self._public_ip_address
+
+    @property
     def dns_zone(self) -> DnsZone:
         """
         Retrieves the Azure DNS Zone.
@@ -125,22 +138,22 @@ class PulumiAzureStack(PulumiStack):
         return self._dns_record
 
     @property
-    def front_door(self) -> FrontDoor:
+    def blob_container(self) -> BlobContainer:
         """
-        Retrieves the Azure Front Door.
-        :return: Such Front Door.
-        :rtype: FrontDoor
+        Retrieves the Azure Blob Container.
+        :return: Such Blob Container.
+        :rtype: BlobContainer
         """
-        return self._front_door
+        return self._blob_container
 
     @property
-    def frontend_endpoint(self) -> FrontendEndpoint:
+    def functions_package(self) -> FunctionsPackage:
         """
-        Retrieves the Azure Frontend Endpoint.
-        :return: Such Frontend Endpoint.
-        :rtype: FrontendEndpoint
+        Retrieves the Azure Functions Package.
+        :return: Such Functions Package.
+        :rtype: org.acmsl.licdata.iac.infrastructure.azure.FunctionsPackage
         """
-        return self._frontend_endpoint
+        return self._functions_package
 
     def declare_infrastructure(self):
         """
@@ -152,16 +165,19 @@ class PulumiAzureStack(PulumiStack):
         self._function_app = FunctionApp(
             self._function_storage_account, self._app_service_plan, self._resource_group
         )
+        self._public_ip_address = PublicIpAddress(self._resource_group)
         self._dns_zone = DnsZone(self._resource_group)
-        # self._dns_record = DnsRecord(
-        #    self._function_app.default_host_name.apply(lambda name: name),
-        #    self._dns_zone,
-        #    self._resource_group,
-        # )
-        # self._front_door = FrontDoor(self._resource_group)
-        # self._frontend_endpoint = FrontendEndpoint(
-        #     self._front_door, self._dns_record, self._dns_zone, self._resource_group
-        # )
+        self._dns_record = DnsRecord(
+            self._public_ip_address,
+            self._dns_zone,
+            self._resource_group,
+        )
+        self._blob_container = BlobContainer(
+            self._function_storage_account, self._resource_group
+        )
+        self._functions_package = FunctionsPackage(
+            self._blob_container, self._function_storage_account, self._resource_group
+        )
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

@@ -53,7 +53,9 @@ class SessionsTable:
         self._sessions_table = self.create_table(
             "sessions", storageAccount, resourceGroup
         )
-        pulumi.export(f"sessions_table.{resourceGroup.name}", self.sessions_table.name)
+        self._sessions_table.name.apply(
+            lambda name: pulumi.export("sessions_table", name)
+        )
 
     @property
     def sessions_table(self) -> pulumi_azure_native.storage.Table:

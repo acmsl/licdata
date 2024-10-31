@@ -55,8 +55,8 @@ class CosmosdbAccount:
             },
             self._resource_group,
         )
-        pulumi.export(
-            f"cosmosdb_account.{resourceGroup.name}", self.cosmosdb_account.name
+        self._cosmosdb_account.name.apply(
+            lambda name: pulumi.export("cosmosdb_account", name)
         )
 
     @property

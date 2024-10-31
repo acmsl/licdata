@@ -64,8 +64,8 @@ class CosmosdbContainer:
                 "kind": "Hash",
             },
         )
-        pulumi.export(
-            f"cosmosdb_container.{resourceGroup.name}", self.cosmosdb_container.name
+        self._cosmosdb_container.name.apply(
+            lambda name: pulumi.export("cosmosdb_container", name)
         )
 
     @property

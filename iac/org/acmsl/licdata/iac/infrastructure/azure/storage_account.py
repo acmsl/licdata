@@ -51,10 +51,6 @@ class StorageAccount(abc.ABC):
         self._storage_account = self.create_storage_account(
             name, resourceGroup, "StorageV2"
         )
-        pulumi.export(
-            f"function_storage_account.{resourceGroup.name}",
-            self._storage_account.name,
-        )
 
     @property
     def storage_account(self) -> pulumi_azure_native.storage.StorageAccount:

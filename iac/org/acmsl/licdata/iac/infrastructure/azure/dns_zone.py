@@ -46,7 +46,7 @@ class DnsZone:
         self._dns_zone = self.create_dns_zone(
             "licenses", "licenses.acmsl.org", resourceGroup
         )
-        pulumi.export(f"dns_zone.{resourceGroup.name}", self.dns_zone.name)
+        self._dns_zone.name.apply(lambda name: pulumi.export("dns_zone", name))
 
     @property
     def dns_zone(self) -> pulumi_azure_native.network.Zone:

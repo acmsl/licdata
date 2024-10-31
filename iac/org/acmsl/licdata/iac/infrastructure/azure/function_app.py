@@ -55,10 +55,9 @@ class FunctionApp:
         self._function_app = self.create_function_app(
             "licenses", appServicePlan, storageAccount, resourceGroup
         )
-        pulumi.export(f"function_app.{resourceGroup.name}", self.function_app.name)
-        pulumi.export(
-            f"function_app_url.{storageAccount.resource_group_name}",
-            self._function_app.default_host_name.apply(lambda name: f"https://{name}"),
+        self._function_app.name.apply(lambda name: pulumi.export(f"function_app", name))
+        self._function_app.default_host_name.apply(
+            lambda name: pulumi.export("function_app_url", f"https://{name}")
         )
 
     @property

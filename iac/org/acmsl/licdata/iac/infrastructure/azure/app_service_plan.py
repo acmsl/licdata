@@ -45,8 +45,8 @@ class AppServicePlan:
         """
         super().__init__()
         self._app_service_plan = self.create_app_service_plan("licenses", resourceGroup)
-        pulumi.export(
-            f"app_service_plan.{resourceGroup.name}", self.app_service_plan.name
+        self._app_service_plan.name.apply(
+            lambda name: pulumi.export("app_service_plan", name)
         )
 
     @property
