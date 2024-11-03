@@ -77,6 +77,8 @@ class AppServicePlan:
             resource_group_name=resourceGroup.name,
             kind="FunctionApp",
             sku=pulumi_azure_native.web.SkuDescriptionArgs(tier="Dynamic", name="Y1"),
+            location=resourceGroup.location,
+            reserved=True,
         )
 
     def __getattr__(self, attr):

@@ -23,6 +23,7 @@ import abc
 from org.acmsl.licdata.iac.domain import Stack
 from pulumi import automation as auto
 from pulumi.automation.errors import CommandError
+from org.acmsl.licdata.iac.domain import InfrastructureUpdated
 
 
 def declare_infrastructure_wrapper_old():
@@ -44,15 +45,17 @@ class PulumiStack(Stack, abc.ABC):
         - org.acmsl.licdata.domain.Stack
     """
 
-    def __init__(self, stackName: str, projectName: str):
+    def __init__(self, stackName: str, projectName: str, location: str):
         """
         Creates a new PulumiStack instance.
         :param stackName: The name of the stack.
         :type stackName: str
         :param projectName: The name of the project.
         :type projectName: str
+        :param location: The Azure location.
+        :type location: str
         """
-        super().__init__(stackName, projectName)
+        super().__init__(stackName, projectName, location)
 
     async def up(self):
         """
@@ -62,16 +65,16 @@ class PulumiStack(Stack, abc.ABC):
         def declare_infrastructure_wrapper():
             return self.declare_infrastructure()
 
+        result = None
+
         stack = auto.create_or_select_stack(
             stack_name=self.stack_name,
             project_name=self.project_name,
             program=declare_infrastructure_wrapper,
         )
 
-        stack.workspace.install_plugin("azure-native", "v2.11.0")
-        # stack.set_config(
-        #    "azure-native:location", auto.ConfigValue(value="spaincentral")
-        # )
+        # stack.workspace.install_plugin("azure-native", "v2.11.0")
+        stack.set_config("azure-native:location", auto.ConfigValue(value=self.location))
         stack.refresh(on_output=self.__class__.logger().debug)
 
         try:
@@ -81,8 +84,13 @@ class PulumiStack(Stack, abc.ABC):
             self.__class__.logger().info(
                 f"update summary: \n{json.dumps(outcome.summary.resource_changes, indent=4)}"
             )
+            result = InfrastructureUpdated(
+                self.stack_name, self.project_name, self.location
+            )
         except CommandError as e:
             self.__class__.logger().error(f"CommandError: {e}")
+
+        return result
 
     @abc.abstractmethod
     def declare_infrastructure(self):

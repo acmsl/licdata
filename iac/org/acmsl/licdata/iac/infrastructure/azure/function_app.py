@@ -89,6 +89,7 @@ class FunctionApp:
         :return: The Azure Function App.
         :rtype: pulumi_azure_native.web.WebApp
         """
+
         return pulumi_azure_native.web.WebApp(
             functionName,
             resource_group_name=resourceGroup.name,
@@ -102,10 +103,25 @@ class FunctionApp:
                     pulumi_azure_native.web.NameValuePairArgs(
                         name="WEBSITE_RUN_FROM_PACKAGE", value="1"
                     ),
-                ]
+                    pulumi_azure_native.web.NameValuePairArgs(
+                        name="FUNCTIONS_WORKER_RUNTIME", value="python"
+                    ),
+                    pulumi_azure_native.web.NameValuePairArgs(
+                        name="AzureWebJobsSecretStorageType", value="files"
+                    ),
+                    pulumi_azure_native.web.NameValuePairArgs(
+                        name="runtime", value="python"
+                    ),
+                    pulumi_azure_native.web.NameValuePairArgs(
+                        name="AzureWebJobsStorage__accountName",
+                        value=functionStorageAccount.name,
+                    ),
+                ],
+                linux_fx_version="Python|3.9",
             ),
-            https_only=True,
             client_affinity_enabled=False,
+            public_network_access="Enabled",
+            location=resourceGroup.location,
         )
 
     def __getattr__(self, attr):

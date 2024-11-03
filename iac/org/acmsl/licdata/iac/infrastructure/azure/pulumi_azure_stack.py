@@ -46,15 +46,17 @@ class PulumiAzureStack(PulumiStack):
         - org.acmsl.licdata.infrastructure.PulumiStack
     """
 
-    def __init__(self, name: str, projectName: str):
+    def __init__(self, name: str, projectName: str, location: str):
         """
         Creates a new PulumiAzureStack instance.
         :param name: The name of the stack.
         :type name: str
         :param projectName: The name of the project.
         :type projectName: str
+        :param location: The Azure location.
+        :type location: str
         """
-        super().__init__(name, projectName)
+        super().__init__(name, projectName, location)
         self._resource_group = None
         self._function_storage_account = None
         self._app_service_plan = None
@@ -159,12 +161,9 @@ class PulumiAzureStack(PulumiStack):
         """
         Creates the infrastructure.
         """
-        self._resource_group = ResourceGroup()
+        self._resource_group = ResourceGroup(self.location)
         self._function_storage_account = FunctionStorageAccount(self._resource_group)
         self._app_service_plan = AppServicePlan(self._resource_group)
-        self._function_app = FunctionApp(
-            self._function_storage_account, self._app_service_plan, self._resource_group
-        )
         self._public_ip_address = PublicIpAddress(self._resource_group)
         self._dns_zone = DnsZone(self._resource_group)
         self._dns_record = DnsRecord(
@@ -177,6 +176,9 @@ class PulumiAzureStack(PulumiStack):
         )
         self._functions_package = FunctionsPackage(
             self._blob_container, self._function_storage_account, self._resource_group
+        )
+        self._function_app = FunctionApp(
+            self._function_storage_account, self._app_service_plan, self._resource_group
         )
 
 

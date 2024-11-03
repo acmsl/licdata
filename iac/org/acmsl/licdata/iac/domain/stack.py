@@ -36,17 +36,20 @@ class Stack(Port, BaseObject):
         - org.acmsl.licdata.domain.LicdataIac
     """
 
-    def __init__(self, stackName: str, projectName: str):
+    def __init__(self, stackName: str, projectName: str, location: str):
         """
         Creates a new stack instance.
         :param stackName: The name of the stack.
         :type stackName: str
         :param projectName: The name of the project.
         :type projectName: str
+        :param location: The location.
+        :type location: str
         """
         super().__init__()
         self._stack_name = stackName
         self._project_name = projectName
+        self._location = location
 
     @property
     @primary_key_attribute
@@ -67,6 +70,15 @@ class Stack(Port, BaseObject):
         :rtype: str
         """
         return self._project_name
+
+    @property
+    def location(self) -> str:
+        """
+        Retrieves the location.
+        :return: The location.
+        :rtype: str
+        """
+        return self._location
 
     @abc.abstractmethod
     async def up(self):

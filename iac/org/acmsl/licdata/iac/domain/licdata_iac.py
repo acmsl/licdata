@@ -66,31 +66,30 @@ class LicdataIac(EventListener):
         :param event: The event.
         :type event: org.acmsl.licdata.iac.domain.InfrastructureUpdateRequested
         """
-        print(
-            f"InfrastructureUpdateRequested event received: {event.stack_name}, {event.project_name}"
+        cls.logger().info(
+            f"Infrastructure update for {event.project_name}/{event.stack_name} at {event.location} requested"
         )
-        await cls.update_infrastructure(event.stack_name, event.project_name)
+        await cls.update_infrastructure(
+            event.stack_name, event.project_name, event.location
+        )
 
     @classmethod
-    async def update_infrastructure(cls, stackName: str, projectName: str):
+    async def update_infrastructure(
+        cls, stackName: str, projectName: str, location: str
+    ):
         """
         Updates the infrastructure.
         :param stackName: The name of the stack.
         :type stackName: str
         :param projectName: The name of the project.
         :type projectName: str
+        :param location: The location.
+        :type location: str
         """
-        # factory = Ports.instance().resolve_first(StackFactory)
-        from org.acmsl.licdata.iac.infrastructure.azure import PulumiAzureStackFactory
-
-        factory = PulumiAzureStackFactory()
-        print(factory)
-        stack = factory.new(stackName, projectName)
-        # from org.acmsl.licdata.iac.infrastructure.azure import PulumiAzureStack
-
-        # stack = PulumiAzureStack(stackName, projectName)
-        print(f"stack: {stack}")
-        await stack.up()
+        factory = Ports.instance().resolve_first(StackFactory)
+        stack = factory.new(stackName, projectName, location)
+        output = await stack.up()
+        return InfrastructureUpdated(stackName, projectName, location)
 
 
 # Local Variables:

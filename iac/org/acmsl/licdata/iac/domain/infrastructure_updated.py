@@ -40,6 +40,7 @@ class InfrastructureUpdated(Event):
         self,
         stackName: str,
         projectName: str,
+        location: str,
         previousEventIds: List[str] = None,
         reconstructedId: str = None,
         reconstructedPreviousEventIds: List[str] = None,
@@ -50,6 +51,8 @@ class InfrastructureUpdated(Event):
         :type stackName: str
         :param projectName: The name of the project.
         :type projectName: str
+        :param location: The location.
+        :type location: str
         :param previousEventIds: The id of previous events, if any.
         :type previousEventIds: List[str]
         :param reconstructedId: The id of the event, if it's generated externally.
@@ -63,6 +66,7 @@ class InfrastructureUpdated(Event):
         )
         self._stack_name = stackName
         self._project_name = projectName
+        self._location = location
 
     @property
     @primary_key_attribute
@@ -83,6 +87,15 @@ class InfrastructureUpdated(Event):
         :rtype: str
         """
         return self._project_name
+
+    @property
+    def location(self) -> str:
+        """
+        Retrieves the location.
+        :return: Such location.
+        :rtype: str
+        """
+        return self._location
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

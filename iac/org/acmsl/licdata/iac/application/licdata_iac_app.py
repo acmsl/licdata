@@ -69,13 +69,15 @@ class LicdataIacApp(PythonEDA):
         :param options: Such options.
         :type options: Dict
         """
-        await LicdataIac.listen_InfrastructureUpdateRequested(
+        updated = await LicdataIac.listen_InfrastructureUpdateRequested(
             InfrastructureUpdateRequested(
-                options.get("stackName", None), options.get("projectName", None)
+                options.get("stackName", None),
+                options.get("projectName", None),
+                options.get("location", None),
             )
         )
-        # if updated:
-        #    await self.emit(updated)
+        if updated:
+            await self.emit(updated)
 
 
 if __name__ == "__main__":
