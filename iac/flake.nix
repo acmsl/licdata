@@ -1,6 +1,6 @@
 # flake.nix
 #
-# This file packages licdata as a Nix flake.
+# This file packages licdata-iac as a Nix flake.
 #
 # Copyright (C) 2024-today acm-sl's licdata
 #
@@ -17,18 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 {
-  description = "Licdata";
+  description = "Licdata IaC";
   inputs = rec {
     nixos.url = "github:NixOS/nixpkgs/24.05";
     flake-utils.url = "github:numtide/flake-utils/v1.0.0";
-    pythoneda-shared-artifact-shared = {
-      inputs.flake-utils.follows = "flake-utils";
+    licdata = {
       inputs.nixos.follows = "nixos";
+      inputs.flake-utils.follows = "flake-utils";
+      url = "github:acmsl/licdata/0.0.1?dir=rest";
       inputs.pythoneda-shared-pythonlang-banner.follows =
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-artifact-def/shared/0.0.58";
+      inputs.pythoneda-shared-pythonlang-infrastructure.follows =
+        "pythoneda-shared-pythonlang-infrastructure";
+      inputs.pythoneda-shared-pythonlang-application.follows =
+        "pythoneda-shared-pythonlang-application";
     };
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
@@ -58,6 +62,8 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
+      inputs.pythoneda-shared-pythonlang-infrastructure.follows =
+        "pythoneda-shared-pythonlang-infrastructure";
       url = "github:pythoneda-shared-pythonlang-def/application/0.0.67";
     };
   };
@@ -68,11 +74,6 @@
         org = "acmsl";
         repo = "licdata-iac";
         version = "0.0.1";
-        sha256 = "";
-        # org = "pythoneda-shared-pythonlang";
-        # repo = "application";
-        # version = "0.0.46";
-        # sha256 = "095gsw39aclg40r4zjywil1m50yqc9nl7z761089ncj4p0lpznvh";
         pname = "${org}-${repo}";
         pythonpackage = "org.acmsl.licdata.iac";
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
@@ -159,12 +160,13 @@
                 pythoneda-shared-pythonlang-domain;
               src = entrypointTemplateFile;
             };
-            src = ./..;
+            src = ./.;
 
             format = "pyproject";
 
             nativeBuildInputs = with python.pkgs; [ pip poetry-core ] ++ [ pkgs.zip ];
             propagatedBuildInputs = with python.pkgs; [
+              licdata
               pythoneda-shared-artifact-shared
               pythoneda-shared-pythonlang-banner
               pythoneda-shared-pythonlang-domain
@@ -172,23 +174,18 @@
               pythoneda-shared-pythonlang-application
               pulumi
               pulumi-azure-native
-              debugpy
             ];
 
             # pythonImportsCheck = [ pythonpackage ];
 
             unpackPhase = ''
-              cp -r ${src}/iac .
+              cp -r ${src} .
               sourceRoot=$(realpath iac)
               chmod +w $sourceRoot
               find $sourceRoot -type d -exec chmod 777 {} \;
               cp ${pyprojectTemplate} $sourceRoot/pyproject.toml
               cp ${bannerTemplate} $sourceRoot/${banner_file}
               cp ${entrypointTemplate} $sourceRoot/entrypoint.sh
-              pushd ${src}/rest
-              echo "zip -r $sourceRoot/rest.zip org"
-              zip -r $sourceRoot/rest.zip org
-              popd
             '';
 
             postPatch = ''
@@ -216,7 +213,7 @@
               cp dist/${wheelName} $out/dist
               cp $sourceRoot/entrypoint.sh $out/bin/${entrypoint}.sh
               chmod +x $out/bin/${entrypoint}.sh
-              cp -r $sourceRoot/rest.zip $sourceRoot/templates $out/lib/python${pythonMajorMinorVersion}/site-packages
+              cp -r ${licdata}/dist/rest.zip $sourceRoot/templates $out/lib/python${pythonMajorMinorVersion}/site-packages
               echo '#!/usr/bin/env sh' > $out/bin/banner.sh
               echo "export PYTHONPATH=$PYTHONPATH" >> $out/bin/banner.sh
               echo "echo 'Running $out/bin/banner'" >> $out/bin/banner.sh
@@ -321,8 +318,7 @@
           licdata-iac-python38 =
             pythoneda-licdata-iac-for {
               python = pkgs.python38;
-              pythoneda-shared-artifact-shared =
-                pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python38;
+              licdata = licdata.packages.${system}.licdata-python38;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python38;
               pythoneda-shared-pythonlang-domain =
@@ -335,6 +331,7 @@
           licdata-iac-python39 =
             licdata-iac-for {
               python = pkgs.python39;
+              licdata = licdata.packages.${system}.licdata-python39;
               pythoneda-shared-artifact-shared =
                 pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python39;
               pythoneda-shared-pythonlang-banner =
@@ -349,8 +346,7 @@
           licdata-iac-python310 =
             licdata-iac-for {
               python = pkgs.python310;
-              pythoneda-shared-artifact-shared =
-                pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python310;
+              licdata = licdata.packages.${system}.licdata-python310;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python310;
               pythoneda-shared-pythonlang-domain =
@@ -363,8 +359,7 @@
           licdata-iac-python311 =
             licdata-iac-for {
               python = pkgs.python311;
-              pythoneda-shared-artifact-shared =
-                pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python311;
+              licdata = licdata.packages.${system}.licdata-python311;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python311;
               pythoneda-shared-pythonlang-domain =

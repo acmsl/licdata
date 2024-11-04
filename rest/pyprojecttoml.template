@@ -1,8 +1,8 @@
-# pyprojecttoml.template
+# rest/pyprojecttoml.template
 #
-# This file is the template for acmsl's licdata-iac
+# This file is the template for acmsl's licdata
 #
-# Copyright (C) 2024-today acmsl's licdata-iac
+# Copyright (C) 2024-today acmsl's licdata
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@ pythoneda-shared-pythonlang-banner = "^@pythonedaSharedPythonlangBanner@"
 pythoneda-shared-pythonlang-domain = "^@pythonedaSharedPythonlangDomain@"
 pythoneda-shared-pythonlang-infrastructure = "^@pythonedaSharedPythonlangInfrastructure@"
 pythoneda-shared-pythonlang-application = "^@pythonedaSharedPythonlangApplication@"
-pulumi = "^@pulumi@"
-pulumi-azure-native = "^@pulumiAzureNative@"
 
 [build-system]
 requires = ["poetry-core"]

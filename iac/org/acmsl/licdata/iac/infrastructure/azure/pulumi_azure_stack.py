@@ -29,8 +29,6 @@ from .dns_zone import DnsZone
 from .dns_record import DnsRecord
 from .blob_container import BlobContainer
 from .functions_package import FunctionsPackage
-from .front_door import FrontDoor
-from .frontend_endpoint import FrontendEndpoint
 
 
 class PulumiAzureStack(PulumiStack):
