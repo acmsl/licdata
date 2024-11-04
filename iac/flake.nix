@@ -24,7 +24,7 @@
     licdata = {
       inputs.nixos.follows = "nixos";
       inputs.flake-utils.follows = "flake-utils";
-      url = "github:acmsl/licdata/0.0.1?dir=rest";
+      url = "github:acmsl/licdata/0.0.2?dir=rest";
       inputs.pythoneda-shared-pythonlang-banner.follows =
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
@@ -73,7 +73,7 @@
       let
         org = "acmsl";
         repo = "licdata-iac";
-        version = "0.0.1";
+        version = "0.0.2";
         pname = "${org}-${repo}";
         pythonpackage = "org.acmsl.licdata.iac";
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
@@ -91,7 +91,7 @@
           builtins.replaceStrings [ "\n" ] [ "" ] "nixos-${nixosVersion}";
         shared = import "${pythoneda-shared-pythonlang-banner}/nix/shared.nix";
         licdata-iac-for = { python
-          , pythoneda-shared-artifact-shared, pythoneda-shared-pythonlang-banner
+          , licdata, pythoneda-shared-pythonlang-banner
           , pythoneda-shared-pythonlang-domain
           , pythoneda-shared-pythonlang-infrastructure
           , pythoneda-shared-pythonlang-application }:
@@ -117,6 +117,7 @@
               inherit homepage pname pythonMajorMinorVersion pythonpackage
                 version;
               package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
+              licdataVersion = licdata.version;
               pythonedaSharedArtifactShared =
                 pythoneda-shared-artifact-shared.version;
               pythonedaSharedPythonlangBanner =
@@ -332,8 +333,6 @@
             licdata-iac-for {
               python = pkgs.python39;
               licdata = licdata.packages.${system}.licdata-python39;
-              pythoneda-shared-artifact-shared =
-                pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python39;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python39;
               pythoneda-shared-pythonlang-domain =
