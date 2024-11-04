@@ -1,6 +1,6 @@
-# flake.nix
+# rest/flake.nix
 #
-# This file packages licdata-rest as a Nix flake.
+# This file packages licdata as a Nix flake.
 #
 # Copyright (C) 2024-today acm-sl's licdata
 #
@@ -17,19 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 {
-  description = "Licdata REST";
+  description = "Licdata";
   inputs = rec {
     nixos.url = "github:NixOS/nixpkgs/24.05";
     flake-utils.url = "github:numtide/flake-utils/v1.0.0";
-    pythoneda-shared-artifact-shared = {
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.nixos.follows = "nixos";
-      inputs.pythoneda-shared-pythonlang-banner.follows =
-        "pythoneda-shared-pythonlang-banner";
-      inputs.pythoneda-shared-pythonlang-domain.follows =
-        "pythoneda-shared-pythonlang-domain";
-      url = "github:pythoneda-shared-artifact-def/shared/0.0.53";
-    };
     pythoneda-shared-pythonlang-banner = {
       inputs.nixos.follows = "nixos";
       inputs.flake-utils.follows = "flake-utils";
@@ -58,6 +49,8 @@
         "pythoneda-shared-pythonlang-banner";
       inputs.pythoneda-shared-pythonlang-domain.follows =
         "pythoneda-shared-pythonlang-domain";
+      inputs.pythoneda-shared-pythonlang-infrastructure.follows =
+        "pythoneda-shared-pythonlang-infrastructure";
       url = "github:pythoneda-shared-pythonlang-def/application/0.0.61";
     };
   };
@@ -66,9 +59,8 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         org = "acmsl";
-        repo = "licdata-rest";
-        version = "0.0.1";
-        sha256 = "";
+        repo = "licdata";
+        version = "0.0.2";
         pname = "${org}-${repo}";
         pythonpackage = "org.acmsl.licdata";
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
@@ -86,7 +78,7 @@
           builtins.replaceStrings [ "\n" ] [ "" ] "nixos-${nixosVersion}";
         shared = import "${pythoneda-shared-pythonlang-banner}/nix/shared.nix";
         licdata-for = { python
-          , pythoneda-shared-artifact-shared, pythoneda-shared-pythonlang-banner
+          , pythoneda-shared-pythonlang-banner
           , pythoneda-shared-pythonlang-domain
           , pythoneda-shared-pythonlang-infrastructure
           , pythoneda-shared-pythonlang-application }:
@@ -99,8 +91,8 @@
               "${pythonMajorVersion}.${builtins.elemAt pythonVersionParts 1}";
             wheelName =
               "${pnameWithUnderscores}-${version}-py${pythonMajorVersion}-none-any.whl";
-            banner_file = "${package}/licdata_iac_banner.py";
-            banner_class = "LicdataIacBanner";
+            banner_file = "${package}/licdata_banner.py";
+            banner_class = "LicdataBanner";
           in python.pkgs.buildPythonPackage rec {
             inherit pname version;
             projectDir = ./.;
@@ -112,8 +104,6 @@
               inherit homepage pname pythonMajorMinorVersion pythonpackage
                 version;
               package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
-              pythonedaSharedArtifactShared =
-                pythoneda-shared-artifact-shared.version;
               pythonedaSharedPythonlangBanner =
                 pythoneda-shared-pythonlang-banner.version;
               pythonedaSharedPythonlangDomain =
@@ -159,7 +149,6 @@
 
             nativeBuildInputs = with python.pkgs; [ pip poetry-core ] ++ [ pkgs.zip ];
             propagatedBuildInputs = with python.pkgs; [
-              pythoneda-shared-artifact-shared
               pythoneda-shared-pythonlang-banner
               pythoneda-shared-pythonlang-domain
               pythoneda-shared-pythonlang-infrastructure
@@ -313,8 +302,6 @@
           licdata-python38 =
             pythoneda-licdata-for {
               python = pkgs.python38;
-              pythoneda-shared-artifact-shared =
-                pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python38;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python38;
               pythoneda-shared-pythonlang-domain =
@@ -327,8 +314,6 @@
           licdata-python39 =
             licdata-for {
               python = pkgs.python39;
-              pythoneda-shared-artifact-shared =
-                pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python39;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python39;
               pythoneda-shared-pythonlang-domain =
@@ -341,8 +326,6 @@
           licdata-python310 =
             licdata-for {
               python = pkgs.python310;
-              pythoneda-shared-artifact-shared =
-                pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python310;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python310;
               pythoneda-shared-pythonlang-domain =
@@ -355,8 +338,6 @@
           licdata-python311 =
             licdata-for {
               python = pkgs.python311;
-              pythoneda-shared-artifact-shared =
-                pythoneda-shared-artifact-shared.packages.${system}.pythoneda-shared-artifact-shared-python311;
               pythoneda-shared-pythonlang-banner =
                 pythoneda-shared-pythonlang-banner.packages.${system}.pythoneda-shared-pythonlang-banner-python311;
               pythoneda-shared-pythonlang-domain =
