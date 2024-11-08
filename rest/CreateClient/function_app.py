@@ -1,6 +1,6 @@
 # vim: set fileencoding=utf-8
 """
-org/acmsl/licdata/infrastructure/azure/clients/create/create.py
+org/acmsl/licdata/infrastructure/azure/clients/create.py
 
 This file defines the Create-Client script for Azure.
 
@@ -21,17 +21,24 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import azure.functions as func
 
+
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    """
-    Azure Function to create a new client.
-    :param req: The Azure Function HTTP request.
-    :type req: func.HttpRequest
-    :return: The response.
-    :rtype: func.HttpResponse
-    """
-    return func.HttpResponse(
-        "This HTTP triggered function executed successfully.",
-        status_code=200
+    name = req.params.get("name")
+    if not name:
+        try:
+            req_body = req.get_json()
+        except ValueError:
+            pass
+        else:
+            name = req_body.get("name")
+
+    if name:
+        return func.HttpResponse(f"Hello, {name}!")
+    else:
+        return func.HttpResponse(
+            "Please pass a name on the query string or in the request body",
+            status_code=400,
+        )
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et

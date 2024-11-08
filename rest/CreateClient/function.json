@@ -1,18 +1,17 @@
 {
   "bindings": [
     {
-      "authLevel": "function",
+      "authLevel": "ANONYMOUS",
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["get", "post"]
+      "methods": ["POST"],
+      "route": "clients/create"
     },
     {
       "type": "http",
       "direction": "out",
       "name": "$return"
     }
-  ],
-  "scriptFile": "create.py",
-  "entryPoint": "main"
+  ]
 }

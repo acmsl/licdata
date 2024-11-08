@@ -1,4 +1,4 @@
-azure-functions==1.21.3
+azure-functions
 PyGithub==1.55
 emails==0.6
 cryptography==39.0.0
