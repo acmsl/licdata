@@ -20,10 +20,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from org.acmsl.licdata.domain import Client
-from pythoneda.shared.application import PythonEDA
+from org.acmsl.licdata.infrastructure.github import GithubClientRepo
+from pythoneda.shared.application import PythonEDA, enable
 import asyncio
 
 
+@enable(GithubClientRepo)
 class LicdataApp(PythonEDA):
     """
     Runs Licdata.
