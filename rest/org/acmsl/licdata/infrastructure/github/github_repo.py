@@ -20,11 +20,11 @@ along with this program.  If not, see <https://www.gnu.org/users/>.
 """
 
 from org.acmsl.licdata.infrastructure.github import github_adapter
+from pythoneda.shared import BaseObject
+from typing import Dict, List, Type
 
-from typing import List, Type
 
-
-class GithubRepo:
+class GithubRepo(BaseObject):
     """
     Abstract class to simplify implementing repositories using Github underneath.
 

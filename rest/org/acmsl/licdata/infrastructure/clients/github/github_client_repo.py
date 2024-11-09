@@ -1,5 +1,5 @@
 """
-org/acmsl/licdata/infrastructure/github/github_client_repo.py
+org/acmsl/licdata/infrastructure/clients/github/github_client_repo.py
 
 This file provides a ClientRepo supported by Github.
 

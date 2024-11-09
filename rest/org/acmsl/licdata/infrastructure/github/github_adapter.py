@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from org.acmsl.licdata.infrastructure.crypt_utils import encrypt
 
-from github_raw import get_contents, create_file, update_file, delete_file
+from .github_raw import get_contents, create_file, update_file, delete_file
 from uuid import uuid4
 import json
 from datetime import datetime

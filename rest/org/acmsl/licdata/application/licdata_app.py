@@ -20,12 +20,28 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from org.acmsl.licdata.domain import Client
-from org.acmsl.licdata.infrastructure.github import GithubClientRepo
+from org.acmsl.licdata.infrastructure.clients.github import GithubClientRepo
+from org.acmsl.licdata.infrastructure.incidents.github import GithubIncidentRepo
+from org.acmsl.licdata.infrastructure.licenses.github import GithubLicenseRepo
+from org.acmsl.licdata.infrastructure.orders.github import GithubOrderRepo
+from org.acmsl.licdata.infrastructure.pcs.github import GithubPcRepo
+from org.acmsl.licdata.infrastructure.prelicenses.github import GithubPrelicenseRepo
+from org.acmsl.licdata.infrastructure.products.github import GithubProductRepo
+from org.acmsl.licdata.infrastructure.product_types.github import GithubProductTypeRepo
+from org.acmsl.licdata.infrastructure.users.github import GithubUserRepo
 from pythoneda.shared.application import PythonEDA, enable
 import asyncio
 
 
 @enable(GithubClientRepo)
+@enable(GithubIncidentRepo)
+@enable(GithubLicenseRepo)
+@enable(GithubOrderRepo)
+@enable(GithubPcRepo)
+@enable(GithubPrelicenseRepo)
+@enable(GithubProductRepo)
+@enable(GithubProductTypeRepo)
+@enable(GithubUserRepo)
 class LicdataApp(PythonEDA):
     """
     Runs Licdata.
