@@ -19,8 +19,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from org.acmsl.licdata.domain import Client
 from pythoneda.shared.application import PythonEDA
-
 import asyncio
 
 
@@ -52,6 +52,17 @@ class LicdataApp(PythonEDA):
             banner = None
 
         super().__init__(banner, __file__)
+
+    async def accept_new_client_requested(self, event):
+        """
+        Receives a request to create a new client.
+        :param event: The event.
+        :type event: org.acmsl.licdata.domain.events.NewClientRequested
+        """
+        created = await Client.listen_NewClientRequested(event)
+        if created:
+            await self.emit(created)
+        return created
 
 
 if __name__ == "__main__":

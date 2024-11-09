@@ -19,7 +19,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from pythoneda.shared import Entity, primary_key_attribute, attribute
+from org.acmsl.licdata.domain.events import NewClientRequested
+from org.acmsl.licdata.domain.events import NewClientCreated
+from pythoneda.shared import (
+    Entity,
+    primary_key_attribute,
+    attribute,
+    EventListener,
+    listen,
+    Ports,
+)
 
 
 class Client(Entity):
@@ -120,3 +129,17 @@ class Client(Entity):
         :type newValue: str
         """
         self._phone = newValue
+
+    @classmethod
+    @listen(NewClientRequested)
+    async def listen_NewClientRequested(
+        cls, event: NewClientRequested
+    ) -> NewClientCreated:
+        """
+        Receives an event requesting the creation of a new client.
+        :param event: The request.
+        :type event: org.acmsl.licdata.domain.events.NewClientRequested
+        :return: The event representing a new client has been created.
+        :rtype event: org.acmsl.licdata.domain.events.NewClientCreated
+        """
+        cls.logger().info(f"New client requested: {event}")

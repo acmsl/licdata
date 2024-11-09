@@ -1,8 +1,8 @@
 # vim: set fileencoding=utf-8
 """
-org/acmsl/licdata/infrastructure/__init__.py
+org/acmsl/licdata/infrastructure/incidents/aws_lambda/__init__.py
 
-This file ensures org.acmsl.licdata.infrastructure is a package.
+This file ensures org.acmsl.licdata.infrastructure.incidents.aws_lambda is a package.
 
 Copyright (C) 2024-today acm-sl's licdata
 
@@ -20,39 +20,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
-
-from .crypt_utils import get_key, encryption_enabled, encrypt
-
-from .mail import send_email, handler
-
-from .params import (
-    load_body,
-    retrieve_param,
-    retrieve_id,
-    retrieve_client_id,
-    retrieve_installation_code,
-    retrieve_product,
-    retrieve_product_version,
-    retrieve_description,
-    retrieve_duration,
-    retrieve_bundle,
-    retrieve_email,
-    retrieve_address,
-    retrieve_contact,
-    retrieve_phone,
-)
-
-from .resp import build_response
-
-from .rest import (
-    retrieve_attributes_from_params,
-    find_by_id,
-    create,
-    update,
-    delete,
-    list,
-)
-
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et
 # Local Variables:

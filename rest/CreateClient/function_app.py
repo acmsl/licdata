@@ -20,25 +20,32 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import azure.functions as func
+from org.acmsl.licdata.application import LicdataApp
+from org.acmsl.licdata.domain.events import NewClientRequested
+import org.acmsl.licdata.infrastructure.clients.common
+import org.acmsl.licdata.infrastructure.rest
+from typing import Dict
 
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
-    name = req.params.get("name")
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get("name")
-
-    if name:
-        return func.HttpResponse(f"Hello, {name}!")
-    else:
-        return func.HttpResponse(
-            "Please pass a name on the query string or in the request body",
-            status_code=400,
-        )
+async def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
+    """
+    Receives an HTTP POST request to create a new client.
+    :param req: The HTTP request.
+    :type req: azure.functions.HttpRequest
+    :param context: The context.
+    :type context: azure.functions.Context
+    :return: The HTTP response.
+    :rtype: azure.functions.HttpResponse
+    """
+    event = NewClientRequested(
+        req.params.get("email"),
+        req.params.get("address"),
+        req.params.get("contact"),
+        req.params.get("phone"),
+    )
+    print(f"Before calling accept_new_client_requested")
+    created = await LicdataApp.instance().accept_new_client_requested(event)
+    return func.HttpResponse(f"Client created: {created}")
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et
