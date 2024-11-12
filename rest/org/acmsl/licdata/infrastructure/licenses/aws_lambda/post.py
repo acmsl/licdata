@@ -112,6 +112,8 @@ def handler(event, context):
         if status == 201:
             try:
                 mail.send_email(
+                    os.environ["MAIL_FROM"],
+                    os.environ["MAIL_TO"],
                     f"New license: {licenseId}",
                     f"""<html>
 <body>
@@ -127,6 +129,12 @@ def handler(event, context):
 </html>
 """,
                     "html",
+                    os.environ["AWS_SES_SMTP_HOST"],
+                    os.environ["AWS_SES_SMTP_PORT"],
+                    os.environ["AWS_SES_SMTP_USERNAME"],
+                    os.environ["AWS_SES_SMTP_PASSWORD"],
+                    os.environ["AWS_SES_SMTP_TIMEOUT"],
+                    os.environ["MAIL_BCC"],
                 )
             except:
                 print(f"Error sending new-license email")

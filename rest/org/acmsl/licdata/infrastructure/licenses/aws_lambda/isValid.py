@@ -65,6 +65,8 @@ def handler(event, context):
                 status = 200
                 respBody = licenseData
                 mail.send_email(
+                    os.environ["MAIL_FROM"],
+                    os.environ["MAIL_TO"],
                     f"License in use: {licenseId}",
                     f"""<html>
   <body>
@@ -81,6 +83,12 @@ def handler(event, context):
 </html>
 """,
                     "html",
+                    os.environ["AWS_SES_SMTP_HOST"],
+                    os.environ["AWS_SES_SMTP_PORT"],
+                    os.environ["AWS_SES_SMTP_USERNAME"],
+                    os.environ["AWS_SES_SMTP_PASSWORD"],
+                    os.environ["AWS_SES_SMTP_TIMEOUT"],
+                    os.environ["MAIL_BCC"],
                 )
             else:
                 print(f"License expired {licenseEnd}")

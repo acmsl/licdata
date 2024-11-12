@@ -16,10 +16,23 @@
     "functions": [ "CreateClient" ],
     "functionTimeout": "00:05:00",
     "logging": {
-        "fileLoggingMode": "debugOnly",
+        "fileLoggingMode": "Always",
         "logLevel": {
           "Function.CreateClient": "Information",
           "default": "Information"
+        },
+        "applicationInsights": {
+            "dependencyTrackingOptions": {
+                "enableSqlCommandTextInstrumentation": true
+            },
+            "enableLiveMetrics": true,
+            "enableDependencyTracking": true,
+            "enablePerformanceCountersCollection": true,
+            "httpAutoCollectionOptions": {
+                "enableHttpTriggerExtendedInfoCollection": true,
+                "enableW3CDistributedTracing": true,
+                "enableResponseHeaderInjection": true
+            }
         }
     }
 }

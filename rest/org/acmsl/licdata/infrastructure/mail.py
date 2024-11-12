@@ -1,5 +1,5 @@
 """
-org/acmsl/licdata/infrastructure/aws_lambda/mail.py
+org/acmsl/licdata/infrastructure/mail.py
 
 This file provides some utilities for sending emails.
 
@@ -20,45 +20,63 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import base64
-import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Dict
+from typing import Dict, Optional
 
 
-def send_email(subject: str, body: str, mimeType: str) -> bool:
+def send_email(
+    mailFrom: str,
+    mailTo: str,
+    subject: str,
+    body: str,
+    mimeType: str,
+    smtpHost: str,
+    smtpPort: str,
+    smtpUsername: str,
+    smtpPassword: str,
+    smtpTimeout: str,
+    bcc: Optional[str] = None,
+) -> bool:
     """
     Sends an email.
+    :param mailFrom: The source address.
+    :type mailFrom: str
+    :param mailTo: The destination address.
+    :type mailTo: str
     :param subject: The subject of the email.
     :type subject: str
     :param body: The body of the email.
     :type body: str
     :param mimeType: The mime-type of the email.
     :type mimeType: str
+    :param smtpHost: The SMTP host.
+    :type smtpHost: str
+    :param smtpPort: The SMTP port.
+    :type smtpPort: str
+    :param smtpUsername: The SMTP username.
+    :type smtpUpsername: str
+    :param smtpPassword: The password for the SMTP username.
+    :type smtpPassword: str
+    :param smtpTimeout: The timeout for SMTP connections.
+    :type smtpTimeout: str
+    :param bcc: The blind-copy address.
+    :type bcc: str
     :return: True if the email is sent.
     :rtype: bool
     """
     try:
-        mailFrom = os.environ["MAIL_FROM"]
-        mailTo = os.environ["MAIL_TO"]
-        bcc = os.environ["MAIL_BCC"]
         rcpt = bcc.split(",") + [mailTo]
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
         msg["To"] = mailTo
         msg.attach(MIMEText(body, mimeType))
         try:
-            server = smtplib.SMTP(
-                os.environ["AWS_SES_SMTP_HOST"],
-                os.environ["AWS_SES_SMTP_PORT"],
-                os.environ["AWS_SES_SMTP_TIMEOUT"],
-            )
+            server = smtplib.SMTP(smtpHost, smtpPort, smtpTimeout)
             server.ehlo()
             server.starttls()
-            server.login(
-                os.environ["AWS_SES_SMTP_USERNAME"], os.environ["AWS_SES_SMTP_PASSWORD"]
-            )
+            server.login(smtpUsername, smtpPassword)
             server.sendmail(mailFrom, rcpt, msg.as_string())
             server.quit()
             result = True
@@ -78,33 +96,3 @@ def send_email(subject: str, body: str, mimeType: str) -> bool:
         result = False
 
     return result
-
-
-def handler(event: Dict, context) -> Dict:
-    """
-    Handler hook used to send emails.
-    :param event: The event to handle.
-    :type event: Dict
-    :param context: The AWS Lambda context.
-    :type context: object
-    :return: The SMTP response.
-    :rtype: smtplib.Response
-    """
-    body = str(event.get("body", ""))
-    print(body)
-    if body:
-        try:
-            body = base64.b64decode(body).decode("utf-8")
-        except BaseException as inst:
-            print(type(inst))
-            print(inst.args)
-            print(inst)
-            print("body not in base64")
-
-    print(f"Sending email with {body}")
-    send_email("Mail endpoint", body, "plain")
-
-    response = {"headers": {"Content-Type": "application/json"}}
-    response["statusCode"] = 200
-
-    return response

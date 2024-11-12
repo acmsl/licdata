@@ -23,6 +23,7 @@ from org.acmsl.licdata.application import Licdata
 from org.acmsl.licdata.domain import OrderRepo
 import org.acmsl.licdata.infrastructure.aws_lambda.orders.common
 import org.acmsl.licdata.infrastructure.aws_lambda.rest
+import os
 
 from typing import Dict
 
@@ -113,6 +114,8 @@ def old_handler(event, context):
                         respBody = prelicenseData
                         response = resp.buildResponse(status, respBody, event, context)
                         mail.send_email(
+                            os.environ["MAIL_FROM"],
+                            os.environ["MAIL_TO"],
                             f"Prelicense in use: {id}",
                             f"""<html>
   <body>
@@ -129,6 +132,12 @@ def old_handler(event, context):
 </html>
 """,
                             "html",
+                            os.environ["AWS_SES_SMTP_HOST"],
+                            os.environ["AWS_SES_SMTP_PORT"],
+                            os.environ["AWS_SES_SMTP_USERNAME"],
+                            os.environ["AWS_SES_SMTP_PASSWORD"],
+                            os.environ["AWS_SES_SMTP_TIMEOUT"],
+                            os.environ["MAIL_BCC"],
                         )
                     else:
                         print(f"Prelicense expired {prelicenseEnd}")

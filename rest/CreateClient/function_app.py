@@ -25,6 +25,9 @@ from org.acmsl.licdata.domain.events import NewClientRequested
 import org.acmsl.licdata.infrastructure.clients.common
 import org.acmsl.licdata.infrastructure.rest
 from typing import Dict
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 async def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
@@ -37,15 +40,24 @@ async def main(req: func.HttpRequest, context: func.Context) -> func.HttpRespons
     :return: The HTTP response.
     :rtype: azure.functions.HttpResponse
     """
-    event = NewClientRequested(
-        req.params.get("email"),
-        req.params.get("address"),
-        req.params.get("contact"),
-        req.params.get("phone"),
-    )
-    print(f"Before calling accept_new_client_requested")
-    created = await LicdataApp.instance().accept_new_client_requested(event)
-    return func.HttpResponse(f"Client created: {created}")
+    result = None
+    try:
+        logging.debug(f"In CreateClient.create")
+        event = NewClientRequested(
+            req.params.get("email"),
+            req.params.get("address"),
+            req.params.get("contact"),
+            req.params.get("phone"),
+        )
+        logging.debug(f"Before calling accept_new_client_requested: {event}")
+        created = await LicdataApp.instance().accept_new_client_requested(event)
+        logging.debug(f"After calling accept_new_client_requested: {created}")
+        result = func.HttpResponse(f"Client created: {created}")
+    except Exception as e:
+        logging.error(f"Error in CreateClient function: {e}")
+        result = func.HttpResponse(f"Internal server error: {e}", status_code=500)
+
+    return result
 
 
 # vim: syntax=python ts=4 sw=4 sts=4 tw=79 sr et
