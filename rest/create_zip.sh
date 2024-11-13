@@ -58,9 +58,8 @@ function prepare_zip_file() {
 
   logInfo -n "Preparing the zip file"
   if copy_nix_modules "${_destination}" \
-    && copy_native_libraries "${_destination}" \
+    && copy_custom_modules "${_destination}" \
     && copy_licdata_files "${_source}" "${_destination}"; then
-  # if copy_licdata_files "${_source}" "${_destination}"; then
     _rescode=${TRUE}
     logInfoResult SUCCESS "done"
   else
@@ -70,9 +69,99 @@ function prepare_zip_file() {
   return ${_rescode}
 }
 
-# fun: copy_nix_modules destination
+# fun: copy_custom_modules destination
+# api: public
+# txt: Copies the custom modules to given folder.
+# opt: destination: The folder used for the zip file.
+# txt: Returns 0/TRUE if the operation succeeds; 1/FALSE otherwise.
+# use: if copy_custom_modules "/tmp"; then echo "nix modules copied"; fi
+function copy_custom_modules() {
+  local _destination="${1}"
+  checkNotEmpty destination "${_destination}" 1
+
+  local -i _rescode=${FALSE}
+  local _output
+  local _module
+  local _package
+
+  local _oldIFS="${IFS}"
+  IFS="${DWIFS}"
+  for _module in $(command echo "${PYTHONPATH}" | command sed 's : \n g' | command grep -v -e '^\.$' | command grep -v -e '/lib-dynload$' | command grep -e 'pythoneda' -e 'rydnr' -e 'org' | command tac | command tail -n +2); do
+    IFS="${_oldIFS}"
+    if command pushd "${_module}" > /dev/null 2>&1; then
+      IFS="${DWIFS}"
+      for _package in $(command find . -maxdepth 1 -type d | command grep -v -e '^\.$' | command grep -v './.git' | command sed 's ./  g'); do
+        IFS="${_oldIFS}"
+        if fileExists "${_package}/__init__.py"; then
+          _output="$(command rsync -avz "${_package}" "${_destination}"/ || echo "$$.ERROR.$$")"
+          if isNotEmpty "${_output}" && contains "${_output}" "$$.ERROR.$$"; then
+            _rescode=${FALSE}
+            break
+          else
+            _rescode=${TRUE}
+          fi
+        fi
+      done
+      IFS="${_oldIFS}"
+      if ! command popd > /dev/null 2>&1; then
+        _rescode=${FALSE}
+        break
+      fi
+    fi
+  done
+  IFS="${_oldIFS}"
+
+  return ${_rescode}
+}
+
+# fun: copy_all_nix_modules destination
 # api: public
 # txt: Copies the pythoneda files to given folder.
+# opt: destination: The folder used for the zip file.
+# txt: Returns 0/TRUE if the operation succeeds; 1/FALSE otherwise.
+# use: if copy_all_nix_modules "/tmp"; then echo "nix modules copied"; fi
+function copy_all_nix_modules() {
+  local _destination="${1}"
+  checkNotEmpty destination "${_destination}" 1
+
+  local -i _rescode=${FALSE}
+  local _output
+  local _module
+  local _package
+
+  local _oldIFS="${IFS}"
+  IFS="${DWIFS}"
+  for _module in $(command echo "${PYTHONPATH}" | command sed 's : \n g' | command grep -v -e '^\.$' | command grep -v -e '/lib-dynload$' | command tac | command tail -n +3); do
+    IFS="${_oldIFS}"
+    if command pushd "${_module}" > /dev/null 2>&1; then
+      IFS="${DWIFS}"
+      for _package in $(command find . -maxdepth 1 -type d | command grep -v -e '^\.$' | command grep -v './.git' | command sed 's ./  g'); do
+        IFS="${_oldIFS}"
+        if fileExists "${_package}/__init__.py"; then
+          _output="$(command rsync -avz "${_package}" "${_destination}"/ || echo "$$.ERROR.$$")"
+          if isNotEmpty "${_output}" && contains "${_output}" "$$.ERROR.$$"; then
+            _rescode=${FALSE}
+            break
+          else
+            _rescode=${TRUE}
+          fi
+        fi
+      done
+      IFS="${_oldIFS}"
+      if ! command popd > /dev/null 2>&1; then
+        _rescode=${FALSE}
+        break
+      fi
+    fi
+  done
+  IFS="${_oldIFS}"
+
+  return ${_rescode}
+}
+
+# fun: copy_nix_modules destination
+# api: public
+# txt: Copies the nix modules to given folder.
 # opt: destination: The folder used for the zip file.
 # txt: Returns 0/TRUE if the operation succeeds; 1/FALSE otherwise.
 # use: if copy_nix_modules "/tmp"; then echo "nix modules copied"; fi
@@ -87,7 +176,7 @@ function copy_nix_modules() {
 
   local _oldIFS="${IFS}"
   IFS="${DWIFS}"
-  for _module in $(command echo "${PYTHONPATH}" | command sed 's : \n g' | command grep -v -e '^\.$' | command grep -v -e '/lib-dynload$' | command tac | command tail -n +3); do
+  for _module in $(command echo "${PYTHONPATH}" | command sed 's : \n g' | command grep -v -e '^\.$' | command grep -v -e '/lib-dynload$' | grep 'stringtemplate3'); do
     IFS="${_oldIFS}"
     if command pushd "${_module}" > /dev/null 2>&1; then
       IFS="${DWIFS}"
@@ -136,7 +225,7 @@ function copy_licdata_files() {
   IFS="${DWIFS}"
   for _asset in org host.json requirements.txt CreateClient; do
     IFS="${_oldIFS}"
-    _output="$(command cp -r "${_licdataFolder}/${_asset}" "${_destination}"/ || echo "$$.ERROR.$$")"
+    _output="$(command sudo cp -r "${_licdataFolder}/${_asset}" "${_destination}"/ || command echo "$$.ERROR.$$")"
     if isNotEmpty "${_output}" && contains "${_output}" "$$.ERROR.$$"; then
       _rescode=${FALSE}
       break
@@ -194,7 +283,7 @@ function copy_native_library() {
   mkdir -p "${_destination}"
   if curlDownload "${_url}" "${_rpmFile}" \
     && extractRpm "${_rpmFile}" "${_destination}"; then
-    find "${_destination}/usr/lib64" -name '*.so*' -exec cp {} "${_folder}" \;
+    find "${_destination}/usr/lib64" -name '*.so*' -exec sudo cp {} "${_folder}" \;
     _rescode=$?
   fi
   rm -rf "${_destination}"
@@ -280,7 +369,7 @@ setScriptLicenseSummary "Distributed under the terms of the GNU General Public L
 setScriptCopyright "Copyleft 2024-today Automated Computing Machinery S.L."
 
 addCommandLineFlag "zipFile" "z" "The full path to the zip file" MANDATORY EXPECTS_ARGUMENT
-addCommandLineFlag "dockerfile" "d" "The full path to the Dockerfile" MANDATORY EXPECTS_ARGUMENT
+# addCommandLineFlag "dockerfile" "d" "The full path to the Dockerfile" MANDATORY EXPECTS_ARGUMENT
 
 checkReq zip
 checkReq grep
