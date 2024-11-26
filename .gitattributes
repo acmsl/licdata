@@ -1,1 +1,2 @@
+.gitattributes def=https://github.com/acmsl-def/licdata artifact=https://github.com/acmsl/licdata-artifact
 serverless.yml filter=git-crypt diff=git-crypt
