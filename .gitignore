@@ -18,3 +18,15 @@ node_modules/
 **/__pycache__/**
 .serverless
 **/*.mine
+*.org
+frontend/setupVitest.js
+frontend/src/components/
+frontend/src/routes/index.css
+frontend/vitest.config.ts
+rest/.deps/
+rest/function_app.py
+rest/requirements*.txt
+rest/rest*.zip
+rest/test.py
+temp/
+tenants/
